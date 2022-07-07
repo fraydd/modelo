@@ -7,10 +7,11 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'modelos') }}</title>
+    <title>CMM</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="js/jquery-3.6.0.min.js" ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -20,11 +21,15 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
+
+
+
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-light sm-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/home') }}">
-                    {{ config('app.name', 'modelos') }}
+                    Home
+                    
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -38,6 +43,19 @@
                               <a class="nav-link" href={{route('modelos.create')}}> Registrar</a> 
                         </li>
                         @endcan
+
+                        @can('empleado.index')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('empleado.index')}}> Ingreso</a> 
+                        </li>
+                        @endcan
+
+                        @can('empleado.index')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('empleado.perfil')}}> Perfil</a> 
+                        </li>
+                        @endcan
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -81,9 +99,14 @@
             </div>
         </nav>
 
+
+
+        
+
         <main class="py-4">
             @yield('content')
         </main>
     </div>
+    
 </body>
 </html>

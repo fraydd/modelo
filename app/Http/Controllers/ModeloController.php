@@ -7,77 +7,56 @@ use Illuminate\Http\Request;
 
 class ModeloController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct()
+    {
+        $this->middleware('can:modelos.create')->only('create');
+    }
+
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
         return view('admin.Registrar');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function store(Request $request)
     {
-        //
+        $modelos=$request->all();
+
+        if($foto=$request->file('foto')){
+            $rutaGimg='images/modelos';
+            $imgP=date('YmdHis').".".$foto->getClientOriginalExtension();
+            $foto->move($rutaGimg, $imgP);
+            $modelos['foto']="$imgP";
+        }
+        modelo::create($modelos);
+        
+        return view('admin.Registrar');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\modelo  $modelo
-     * @return \Illuminate\Http\Response
-     */
     public function show(modelo $modelo)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\modelo  $modelo
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function edit(modelo $modelo)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\modelo  $modelo
-     * @return \Illuminate\Http\Response
-     */
+  
     public function update(Request $request, modelo $modelo)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\modelo  $modelo
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(modelo $modelo)
     {
         //

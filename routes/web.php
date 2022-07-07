@@ -21,5 +21,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+Route::get('/empleado', [App\Http\Controllers\EmpleadoController::class, 'index'])->name('empleado.index');
+Route::post('/empleado', [App\Http\Controllers\EmpleadoController::class, 'store'])->name('empleado.store');
+Route::get('/empleado/perfil', [App\Http\Controllers\EmpleadoController::class, 'perfil'])->name('empleado.perfil');
 Route::resource('modelos',ModeloController::class);

@@ -8,4 +8,46 @@ use Illuminate\Database\Eloquent\Model;
 class modelo extends Model
 {
     use HasFactory;
+    protected $fillable=[
+         /* Datos personales */
+
+         'nombre',
+         'nid',
+         'foto',
+         'expedido',
+         'fechan',
+         'direccion',
+         'telefono',
+
+         /* Datos comerciales */
+         'estatura',
+         'busto',
+         'cintura',
+         'cadera',
+         'cabello',
+         'ojos',
+         'piel',
+         'pantalon',
+         'camisa',
+         'calzado',
+
+         /* Redes sociales */
+         'facebook',    
+         'instagram',  
+         'twitter',
+         'tiktok',
+         'otro',
+
+         /* Datos acudiente */
+         'nombre_acudiente',
+         'nid_acudiente',
+         'expedido_acudiente',
+         'parentezco',
+         'direccion_acudiente',
+         'telefono_acudiente'
+    ];
+
+    public function ingresos(){
+        return $this->hasMany(Ingreso::class);
+    }
 }
