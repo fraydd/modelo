@@ -44,7 +44,12 @@ class modelo extends Model
          'expedido_acudiente',
          'parentezco',
          'direccion_acudiente',
-         'telefono_acudiente'
+         'telefono_acudiente',
+
+         /* control */
+         'estado',
+         'meses_pagados',
+         'fecha_pago',
     ];
 
     public function ingresos(){

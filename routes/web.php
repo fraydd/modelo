@@ -25,3 +25,6 @@ Route::get('/empleado', [App\Http\Controllers\EmpleadoController::class, 'index'
 Route::post('/empleado', [App\Http\Controllers\EmpleadoController::class, 'store'])->name('empleado.store');
 Route::get('/empleado/perfil', [App\Http\Controllers\EmpleadoController::class, 'perfil'])->name('empleado.perfil');
 Route::resource('modelos',ModeloController::class);
+Route::get('modelos/{modelo}/renovar',[App\Http\Controllers\ModeloController::class, 'renovar'])->name('modelos.renovar');
+Route::get('modelos/{modelo}/borrar',[App\Http\Controllers\ModeloController::class, 'borrar'])->name('modelos.borrar');
+Route::get('modelos/pdf',[App\Http\Controllers\ModeloController::class, 'pdf'])->name('modelos.pdf');

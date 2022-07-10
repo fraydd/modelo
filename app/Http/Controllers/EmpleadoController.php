@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingreso;
 use App\Models\modelo;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Session;
@@ -34,26 +34,41 @@ class EmpleadoController extends Controller
             return view('empleado.ingreso');
         } else{
 
-        $nombreModelo=$modelo["0"]->nombre;
-        $fotoModelo=$modelo["0"]->foto;
-        $array=array('nombre'=>$nombreModelo,
-                    'foto'=>$fotoModelo);
-
+        //Recuperación de variables
         $Nombre=$modelo["0"]->nombre;
         $Foto=$modelo["0"]->foto;
         $id=$modelo["0"]->id;
+        $Estado=$modelo["0"]->estado;
+
+        $Fecha_pago=$modelo["0"]->fecha_pago;
+        $Meses=$modelo["0"]->meses_pagados;
+        $Fecha_v=date("Y-m-d",strtotime($Fecha_pago."+".$Meses."month"));
+
         
-        
+        // Codificacion de variables
+        $estado=json_encode($Estado);
         $data= json_encode($Nombre);
         $foto= json_encode($Foto);
+        $fecha_v=json_encode($Fecha_v);
         
+
+
+        //Almacenando ingreso
         $ingreso = new Ingreso();
         $ingreso->modelo_id=$id;
-        
         $ingreso->save();
-        //Ingreso::create($ingreso);
+       
         
-        return redirect('empleado')->with('data', $data)->with('foto', $foto);
+        //Enviando información a la vista
+        
+
+
+
+        return redirect('empleado')
+        ->with('foto', $foto)
+        ->with('data', $data)
+        ->with('estado',$estado)
+        ->with('fecha_v',$fecha_v);
         }
     }
 

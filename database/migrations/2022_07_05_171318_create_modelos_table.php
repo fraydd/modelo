@@ -54,6 +54,13 @@ class CreateModelosTable extends Migration
             $table->string('parentezco')->nullable();
             $table->string('direccion_acudiente')->nullable();
             $table->string('telefono_acudiente')->nullable();
+            
+
+            /* Control */
+
+            $table->boolean('estado');
+            $table->integer('meses_pagados');
+            $table->date('fecha_pago');
 
 
             $table->timestamps();

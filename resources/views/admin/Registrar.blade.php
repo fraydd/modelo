@@ -3,9 +3,24 @@
 @section('content')
 
 <div class="container">
-
+                @if (session('error'))
+                    <div class="des">
+                        <div class=" alert alert-danger" role="alert">
+                        
+                        Error al registrar!
+                        </div>
+                    </div>
+                    <script>
+                            $(document).ready(function(){
+                                setTimeout(function(){
+                                    
+                                    $(".des").fadeOut(500);
+                                },2000);  
+                            })
+                        </script>
+                @endif
             <div class="card">
-                <div class="card-header">{{ __('Registrar') }}</div>
+                <div class="card-header"><h5>Registrar</h5></div>
 
                 <div class="card-body">
 
@@ -122,14 +137,39 @@
                 <label for="telefono_acudiente">telefono_acudiente</label>
                 <br>
 
+                <input type="number" name="meses_pagados" id="meses_pagados">
+                <label for="meses_pagados">Cantidad de meses</label>
+                <br>
+
+                <input type="text" name="fecha_pago" id="fecha_pago">
+                <label for="fecha_pago">Fecha de inicio</label>
+                <br>
+
                 <label for="foto">Fotografía</label>
                 <input  type="file" name="foto" id="foto">
 
-                <input  type="submit" value="Registrar" class="float-end btn btn-outline-success">
+                <input id="registrar" type="submit" value="Registrar" class="float-end btn btn-outline-success">
                 
                 </form>
                 </div>
+                
             </div>
+
+            <script>
+                            $(document).ready(function(){
+                                
+                                var a="hola"
+                                document.getElementById("registrar").onclick = function() {myFunction()};
+
+                                function myFunction() {
+                                    setTimeout(function(){
+                                        location.reload();
+                                    },300);
+                                    
+                                }
+
+                            })
+            </script>
         
 </div>
 @endsection

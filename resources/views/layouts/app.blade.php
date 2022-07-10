@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSRF Token -->
@@ -11,8 +12,19 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="js/jquery-3.6.0.min.js" ></script>
+    <script src="{{ asset('js/jquery-3.6.0.min.js') }}" ></script>
 
+    <!-- Datatables -->
+    <!-- <link rel="stylesheet" type="text/css" href="{{ asset('css/datatables.min.css') }}"/> -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/dataTables.bootstrap5.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.bootstrap5.min.css') }}"/>
+
+
+    <script type="text/javascript" src="{{ asset('js/datatables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/dataTables.responsive.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/responsive.bootstrap5.min.js') }}"></script>
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -41,6 +53,12 @@
                         @can('modelos.create')
                         <li class="nav-item">
                               <a class="nav-link" href={{route('modelos.create')}}> Registrar</a> 
+                        </li>
+                        @endcan
+
+                        @can('modelos.create')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('modelos.index')}}> Renovar</a> 
                         </li>
                         @endcan
 
