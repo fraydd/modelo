@@ -10,6 +10,7 @@
 
     <title>CMM</title>
 
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}" ></script>
@@ -61,6 +62,11 @@
                               <a class="nav-link" href={{route('modelos.index')}}> Renovar</a> 
                         </li>
                         @endcan
+                        @can('modelos.create')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('modelos.tarifa')}}> Tarifas</a> 
+                        </li>
+                        @endcan
 
                         @can('empleado.index')
                         <li class="nav-item">
@@ -71,6 +77,12 @@
                         @can('empleado.index')
                         <li class="nav-item">
                               <a class="nav-link" href={{route('empleado.perfil')}}> Perfil</a> 
+                        </li>
+                        @endcan
+
+                        @can('empleado.index')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('empleado.ingreso')}}> Empleados</a> 
                         </li>
                         @endcan
 
@@ -109,6 +121,10 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
+                                    @can('modelos.create')
+                                        <a class="dropdown-item" href="{{ route('admin.index') }}">Listar empleados </a>
+                                        <a class="dropdown-item" href="{{ route('admin.create') }}"> Registrar empleado</a>
+                                    @endcan
                                 </div>
                             </li>
                         @endguest

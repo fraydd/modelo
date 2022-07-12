@@ -10,7 +10,7 @@
 
                 <div class="card-body">
                    
-                    <p>Home</p>
+                    <p>Hola mundo</p>
                 </div>
             </div>
         </div>

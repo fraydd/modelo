@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\modelo;
+use App\Models\Tarifa;
+use Hamcrest\Core\HasToString;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use phpDocumentor\Reflection\Types\Boolean;
 
@@ -13,7 +16,7 @@ class ModeloController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:modelos.create')->only('create','index','borrar');
+        $this->middleware('can:modelos.create')->only('create','index','borrar','tarifa');
         //$this->middleware('can:modelos')->only('index');
     }
 
@@ -72,8 +75,6 @@ class ModeloController extends Controller
        
 
         return $pdf->download('pago.pdf');
-        
-         return view('admin.Registrar');
     
     }
 
@@ -99,6 +100,67 @@ class ModeloController extends Controller
         return redirect('modelos')->with('modelos', $modelos);
        
 
+        
+    }
+
+    public function tarifa(){
+        $anterior = Tarifa::all();
+        $mes=$anterior['0']->tarifaMes;
+        $pasarela=$anterior['0']->tarifaP;
+
+        $mes=json_encode($mes);
+        $pasarela=json_encode($pasarela);
+        
+        
+        return view('admin.tarifa')
+        ->with('pasarela',$pasarela)
+        ->with('mes', $mes);
+    }
+
+    public function tarifaMes(Request $request){
+        
+
+        $tarifa=$request->except('_token');
+
+
+        $registro =Tarifa::findOrFail(1);
+        $registro->tarifaMes=intval($request->input('tarifaMes')) ;
+        $registro->save();
+
+        $anterior = Tarifa::all();
+        $mes=$anterior['0']->tarifaMes;
+        $pasarela=$anterior['0']->tarifaP;
+
+        $mes=json_encode($mes);
+        $pasarela=json_encode($pasarela);
+        
+        
+        return view('admin.tarifa')
+        ->with('pasarela',$pasarela)
+        ->with('mes', $mes);
+    }
+
+    public function tarifaP(Request $request){
+        
+        $tarifa=$request->except('_token');
+
+
+        $registro =Tarifa::findOrFail(1);
+        $registro->tarifaP=intval($request->input('tarifaP')) ;
+        
+        $registro->save();
+
+        $anterior = Tarifa::all();
+        $mes=$anterior['0']->tarifaMes;
+        $pasarela=$anterior['0']->tarifaP;
+
+        $mes=json_encode($mes);
+        $pasarela=json_encode($pasarela);
+        
+        
+        return view('admin.tarifa')
+        ->with('pasarela',$pasarela)
+        ->with('mes', $mes);
         
     }
 }

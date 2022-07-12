@@ -16,14 +16,25 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Registro de ingreso</div>
+                <div class="card-header"><h5>Registro de ingreso de usuarios.</h5></div>
 
                 <div class="card-body">
                    
                 <form  action="{{ url('/empleado')}}" method="post" enctype='multipart/form-data'>
                 @csrf
-                <label for="di">Ingrese su clave </label> 
-                <input type="password" name="di" id="di">
+                
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Ingrese su clave: </span>
+                    
+                    <input placeholder=" " type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    
+                    <input type="submit" class="btn btn-outline-secondary" id="button-addon2">
+
+                </div>
+
+                
+                    
+                    
                 
                 </form>
                 </div>

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ModeloController;
+use App\Http\Controllers\TarifaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +26,20 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/empleado', [App\Http\Controllers\EmpleadoController::class, 'index'])->name('empleado.index');
 Route::post('/empleado', [App\Http\Controllers\EmpleadoController::class, 'store'])->name('empleado.store');
 Route::get('/empleado/perfil', [App\Http\Controllers\EmpleadoController::class, 'perfil'])->name('empleado.perfil');
+Route::get('/empleado/ingreso', [App\Http\Controllers\EmpleadoController::class, 'ingreso'])->name('empleado.ingreso');
+Route::post('/empleado/ingreso', [App\Http\Controllers\EmpleadoController::class, 'estore'])->name('empleado.estore');
+Route::post('/empleado/salida', [App\Http\Controllers\EmpleadoController::class, 'salida'])->name('empleado.salida');
+
+
 Route::resource('modelos',ModeloController::class);
 Route::get('modelos/{modelo}/renovar',[App\Http\Controllers\ModeloController::class, 'renovar'])->name('modelos.renovar');
 Route::get('modelos/{modelo}/borrar',[App\Http\Controllers\ModeloController::class, 'borrar'])->name('modelos.borrar');
 Route::get('modelos/pdf',[App\Http\Controllers\ModeloController::class, 'pdf'])->name('modelos.pdf');
+
+
+Route::get('tarifa', 'App\Http\Controllers\ModeloController@tarifa')->name('modelos.tarifa');
+Route::post('tarifaMes', 'App\Http\Controllers\ModeloController@tarifaMes')->name('modelos.tarifaMes');
+Route::post('tarifaP', 'App\Http\Controllers\ModeloController@tarifaP')->name('modelos.tarifaP');
+
+Route::resource('admin',AdminController::class);
+Route::get('admin/{admin}/borrar',[App\Http\Controllers\AdminController::class, 'borrar'])->name('admin.borrar');

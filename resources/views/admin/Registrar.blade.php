@@ -164,7 +164,7 @@
                                 function myFunction() {
                                     setTimeout(function(){
                                         location.reload();
-                                    },300);
+                                    },1000);
                                     
                                 }
 

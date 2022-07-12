@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ingreso;
+use App\Models\Eingreso;
 use App\Models\modelo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Session;
+
 
 class EmpleadoController extends Controller
 {
@@ -74,5 +76,89 @@ class EmpleadoController extends Controller
 
     public function perfil(){
         return view('empleado.perfil');
+    }
+
+    public function ingreso(){
+
+        return view('empleado.ingresoe');
+    }
+
+    public function salida(Request $request){
+        /* dd($request->di); */
+        $cc=$request->all();
+
+        
+
+        $empleado=DB::table('admins')->where('cedula','=',$cc["di"])->get()->toArray();
+         if(empty($empleado)){
+             session()->flash('error');
+            return view('empleado.ingresoe');
+        } 
+        else{
+            //Recuperación de variables
+            $Nombre=$empleado["0"]->nombre;
+            $id=$empleado["0"]->id;
+            $ingreso=DB::table('eingresos')->where('empleado_id','=',$id)->get();
+
+            
+            $l=count($ingreso)-1;
+            //dd($ingreso[$l]->id);
+            
+            /* $l=count($ingreso)-1;
+            echo($ingreso[$l]); */
+            $idr=$ingreso[$l]->id;
+        
+            
+            $registro =Eingreso::findOrFail($idr);
+
+            $current_date_time = Carbon::now()->toDateTimeString();
+            
+            $registro->salida=$current_date_time;
+            $registro->save();
+            
+
+            // Codificacion de variables
+            $nombre= json_encode($Nombre);
+            
+        
+            
+            //Enviando información a la vista
+            return redirect('empleado/ingreso')
+                ->with('nombre', $nombre);
+        }
+        
+    }
+
+    public function estore(Request $request){
+        
+
+        $cc=$request->all();
+       
+        //
+        $empleado=DB::table('admins')->where('cedula','=',$cc["di"])->get()->toArray();
+         if(empty($empleado)){
+             session()->flash('error');
+            return view('empleado.ingresoe');
+        } 
+        else{
+
+                //Recuperación de variables
+                $Nombre=$empleado["0"]->nombre;
+                $id=$empleado["0"]->id;
+
+                // Codificacion de variables
+                $data= json_encode($Nombre);
+                
+                //Almacenando ingreso
+                $ingreso = new Eingreso();
+                $ingreso->empleado_id=$id;
+                $ingreso->save();
+            
+                
+                //Enviando información a la vista
+                return redirect('empleado/ingreso')
+                    ->with('data', $data);
+            }
+        return view('empleado.ingresoe');
     }
 }
