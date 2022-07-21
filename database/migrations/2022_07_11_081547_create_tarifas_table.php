@@ -15,8 +15,9 @@ class CreateTarifasTable extends Migration
     {
         Schema::create('tarifas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tarifaMes');
-            $table->unsignedBigInteger('tarifaP');
+            $table->string('tipo');
+            $table->unsignedBigInteger('valor');
+
 
             $table->timestamps();
         });

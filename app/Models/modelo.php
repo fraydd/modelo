@@ -18,6 +18,10 @@ class modelo extends Model
          'fechan',
          'direccion',
          'telefono',
+         'correo',
+         'sex_id',
+         'identification_id',
+         'rh_id',
 
          /* Datos comerciales */
          'estatura',
@@ -50,9 +54,21 @@ class modelo extends Model
          'estado',
          'meses_pagados',
          'fecha_pago',
+         'fecha_vence',
     ];
 
     public function ingresos(){
         return $this->hasMany(Ingreso::class);
     }
+    public function sexes(){
+        return $this->belongsTo(sex::class);
+        }
+    
+        public function identifications(){
+            return $this->belongsTo(identification::class);
+            }
+
+            public function rhs(){
+                return $this->belongsTo(rh::class);
+                }
 }

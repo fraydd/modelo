@@ -1,0 +1,1 @@
+hola{{$modelo->nombre}}  {{$tarifa->tarifaMes}}

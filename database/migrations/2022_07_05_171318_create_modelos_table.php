@@ -17,12 +17,13 @@ class CreateModelosTable extends Migration
             /* Datos personales */
             $table->id();
             $table->string('nombre');
-            $table->integer('nid');
+            $table->unsignedBigInteger('nid');
             $table->string('foto');
             $table->string('expedido');
             $table->date('fechan');
             $table->string('direccion');
             $table->string('telefono');
+            $table->string('correo');
             /*  identification
                 sexe
                 gsrh
@@ -61,9 +62,25 @@ class CreateModelosTable extends Migration
             $table->boolean('estado');
             $table->integer('meses_pagados');
             $table->date('fecha_pago');
+            $table->date('fecha_vence');
 
 
             $table->timestamps();
+
+            $table->unsignedBigInteger('sex_id');
+            $table->foreign('sex_id')
+                ->references('id')
+                ->on('sexes');
+
+            $table->unsignedBigInteger('identification_id');
+            $table->foreign('identification_id')
+                ->references('id')
+                ->on('identifications');
+
+            $table->unsignedBigInteger('rh_id');
+            $table->foreign('rh_id')
+                ->references('id')
+                ->on('rhs');
         });
     }
 

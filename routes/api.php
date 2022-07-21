@@ -1,9 +1,13 @@
 <?php
 
 use App\Models\Admin;
+use App\Models\Caja;
+use App\Models\Eingreso;
+use App\Models\Ingreso;
 use App\Models\modelo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +36,15 @@ Route::get('datatable',function(){
                 }
             
             }
+
+            foreach ($modelos as $modelo ) {
+                $b=$modelo->busto;
+                $ci=$modelo->cintura;
+                $ca=$modelo->cadera;
+                $array=strval($b).'/'.strval($ci).'/'.strval($ca);
+                $modelo->fac=$array;
+                
+            }
     return datatables()
     ->of($modelos)
     
@@ -49,5 +62,83 @@ Route::get('datatable2',function(){
     
     ->addColumn('btn','actionsempleado')
     ->rawColumns(['btn'])
+    ->toJson();
+});
+
+Route::get('datatable3',function(){
+    $cajas=Caja::all();
+    foreach($cajas as $caja)
+    {
+        $caja->valor=number_format($caja->valor,0);
+    }
+
+    return datatables()
+    ->of($cajas)
+    ->toJson();
+});
+
+Route::get('datatable4',function(){
+    $modelos=modelo::all();
+
+    return datatables()
+    ->of($modelos)
+    
+    ->addColumn('btn','actionspasarela')
+    ->addColumn('imagen','foto')
+    ->rawColumns(['btn','imagen'])
+    ->toJson();
+});
+
+Route::get('datatable5',function(){
+    $ingresos=Ingreso::all();
+    $colec=collect([]);
+    $nombre=[];
+    $i=1;
+    foreach ($ingresos as $ingreso ) {
+        $modelo=modelo::findOrFail($ingreso->modelo_id);
+        $nombre=$modelo->nombre;
+        $create=$ingreso->created_at;
+        
+        $data=new Ingreso();
+        $data->nombre=$nombre;
+        $data->create=$create->format('Y-m-d h:i:s');
+        $dat[$i]=$data;
+        $colec->push($dat[$i]);
+        $i++;
+    
+
+        
+    }
+
+    return datatables()
+    ->of($colec)
+    ->toJson();
+});
+
+Route::get('datatable6',function(){
+
+    $ingresos=Eingreso::all();
+    $colec=collect([]);
+    $nombre=[];
+    $i=1; 
+    
+    foreach ($ingresos as $ingreso ) {
+        $empleado=Admin::findOrFail($ingreso->empleado_id);
+        $nombre=$empleado->nombre;
+        $create=$ingreso->created_at;
+        $update=$ingreso->salida;
+        
+        $data=new Ingreso();
+        $data->nombre=$nombre;
+        $data->create=$create->format('Y-m-d H:i:s');
+        $data->update=$update;
+        $dat[$i]=$data;
+        $colec->push($dat[$i]);
+        $i++;
+
+    }
+
+    return datatables()
+    ->of($colec)
     ->toJson();
 });

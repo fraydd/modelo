@@ -29,17 +29,27 @@ Route::get('/empleado/perfil', [App\Http\Controllers\EmpleadoController::class, 
 Route::get('/empleado/ingreso', [App\Http\Controllers\EmpleadoController::class, 'ingreso'])->name('empleado.ingreso');
 Route::post('/empleado/ingreso', [App\Http\Controllers\EmpleadoController::class, 'estore'])->name('empleado.estore');
 Route::post('/empleado/salida', [App\Http\Controllers\EmpleadoController::class, 'salida'])->name('empleado.salida');
+Route::post('perfil', [App\Http\Controllers\EmpleadoController::class, 'perfilpost'])->name('empleado.perfilpost');
 
 
 Route::resource('modelos',ModeloController::class);
 Route::get('modelos/{modelo}/renovar',[App\Http\Controllers\ModeloController::class, 'renovar'])->name('modelos.renovar');
 Route::get('modelos/{modelo}/borrar',[App\Http\Controllers\ModeloController::class, 'borrar'])->name('modelos.borrar');
 Route::get('modelos/pdf',[App\Http\Controllers\ModeloController::class, 'pdf'])->name('modelos.pdf');
+Route::put('modelos/renovar/{modelo}', 'App\Http\Controllers\ModeloController@renovarpost')->name('modelos.renovarpost');
+Route::get('pasarela',[App\Http\Controllers\ModeloController::class, 'pasarela'])->name('modelos.pasarela');
+Route::get('caja',[App\Http\Controllers\ModeloController::class, 'caja'])->name('modelos.caja');
+Route::post('caja', [App\Http\Controllers\ModeloController::class, 'cajapost'])->name('modelos.cajapost');
+Route::get('estadisticas',[App\Http\Controllers\ModeloController::class, 'estadisticas'])->name('modelos.estadisticas');
+Route::get('modelos/{modelo}/pasarela', [App\Http\Controllers\ModeloController::class, 'pasarelapost'])->name('modelos.pasarelapost');
+Route::put('update/{usuario}',[App\Http\Controllers\ModeloController::class, 'update'])->name('update');
 
 
-Route::get('tarifa', 'App\Http\Controllers\ModeloController@tarifa')->name('modelos.tarifa');
-Route::post('tarifaMes', 'App\Http\Controllers\ModeloController@tarifaMes')->name('modelos.tarifaMes');
-Route::post('tarifaP', 'App\Http\Controllers\ModeloController@tarifaP')->name('modelos.tarifaP');
+Route::get('tarifa', 'App\Http\Controllers\AdminController@tarifa')->name('modelos.tarifa');
+Route::post('tarifaMes', 'App\Http\Controllers\AdminController@tarifaMes')->name('modelos.tarifaMes');
+Route::post('tarifaP', 'App\Http\Controllers\AdminController@tarifaP')->name('modelos.tarifaP');
 
 Route::resource('admin',AdminController::class);
 Route::get('admin/{admin}/borrar',[App\Http\Controllers\AdminController::class, 'borrar'])->name('admin.borrar');
+Route::get('ingresos',[App\Http\Controllers\AdminController::class, 'ingresos'])->name('admin.ingresos');
+Route::get('ingresose',[App\Http\Controllers\AdminController::class, 'ingresose'])->name('admin.ingresose');

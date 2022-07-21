@@ -7,7 +7,7 @@
 
 
             <div class="card">
-                <div class="card-header"><h5>Renovar suscripción</h5></div>
+                <div class="card-header"><h5>Lista de usuarios.</h5></div>
 
                 <div class="card-body">
                     <table class="table table-strped  table-hover shadow-sm " id="tabla">
@@ -16,7 +16,9 @@
                                 <th>Foto</th>
                                 <th>Nombre </th>
                                 <th>Identificación</th>
+                                <th>Medidas</th>
                                 <th>Suscripción</th>
+                                <th>Vigencia</th>
                                 <th >&nbsp;</th>
                                 
                                 
@@ -30,12 +32,14 @@
         
 </div>
 <script>
+    const link="{{url('api/datatable')}}"
+    console.log(link);
     
         $('#tabla').DataTable(
             {
                 "serverSide": true,
                 
-                "ajax":"{{url('api/datatable')}}",
+                "ajax":link,
 
                 "columnDefs": [
                  { 'searchable': false, 
@@ -46,7 +50,9 @@
                     {data:'imagen'},
                     {data:'nombre'},
                     {data:'nid'},
+                    {data:'fac'},
                     {data:'estado'},
+                    {data:'fecha_vence'},
                     
                     {data:'btn',className: "text-center"},
 

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingreso;
 use App\Models\Eingreso;
+use App\Models\identification;
 use App\Models\modelo;
+use App\Models\rh;
+use App\Models\sex;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +47,7 @@ class EmpleadoController extends Controller
 
         $Fecha_pago=$modelo["0"]->fecha_pago;
         $Meses=$modelo["0"]->meses_pagados;
-        $Fecha_v=date("Y-m-d",strtotime($Fecha_pago."+".$Meses."month"));
+        $Fecha_v=$modelo["0"]->fecha_vence;
 
         
         // Codificacion de variables
@@ -75,7 +78,40 @@ class EmpleadoController extends Controller
     }
 
     public function perfil(){
-        return view('empleado.perfil');
+        
+
+        return view('empleado.perfilform');
+    }
+
+    public function perfilpost(Request $request ){
+        $cc=$request->all();
+        $id=DB::table('modelos')->where('nid','=',$cc["di"])->get()->toArray();
+        if(empty($id)){
+            session()->flash('error');
+           return view('empleado.perfilform');
+       } else{
+            $modelo=modelo::find($id["0"]->id);
+            
+
+            
+            $now =new Carbon( Carbon::now()->format('Y-m-d'));
+            $modelo->edad=$now->diffInYears($modelo->fechan);
+            $facebook=json_encode($modelo->facebook);
+            $instagram=json_encode($modelo->instagram);
+            $tiktok=json_encode($modelo->tiktok);
+            $twitter=json_encode($modelo->twitter);
+            $id=identification::find($modelo->identification_id);
+            $sex=sex::find($modelo->sex_id);
+            $rh=rh::find($modelo->rh_id);
+        
+            return view('empleado.perfil',compact('modelo','id','sex','rh'))
+            ->with('instagram',$instagram)
+            ->with('tiktok',$tiktok)
+            ->with('twitter',$twitter)
+            ->with('facebook',$facebook);
+       }
+        
+        
     }
 
     public function ingreso(){

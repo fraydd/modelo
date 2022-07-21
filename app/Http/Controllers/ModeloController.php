@@ -1,11 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Admin;
+use App\Models\Caja;
+use App\Models\identification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\modelo;
+use App\Models\rh;
+use App\Models\sex;
 use App\Models\Tarifa;
+use Carbon\Carbon;
 use Hamcrest\Core\HasToString;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -16,12 +24,18 @@ class ModeloController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:modelos.create')->only('create','index','borrar','tarifa');
+        $this->middleware('can:modelos.create')->only('create','index','borrar','pasarela','caja');
         //$this->middleware('can:modelos')->only('index');
+        //$this->middleware('can:root')->only('create','index','borrar','tarifa','pasarela','caja');
+
     }
 
     public function index()
     {
+
+        $reload= new HomeController;
+        $ejecutar=$reload->reload();
+        
         $modelos=modelo::all();
        
         foreach($modelos as $modelo)
@@ -39,52 +53,307 @@ class ModeloController extends Controller
         $array=$modelo->getAttributes();
         
         
+
+        
+        
         return view('admin.index');
     }
 
     
     public function create()
     {
-        return view('admin.Registrar');
+        $sexes=sex::all();
+        $identifications=identification::all();
+        $rhs=rh::all();
+        
+        return view('admin.Registrar',compact('sexes','identifications','rhs'));
     }
 
    
     public function store(Request $request)
     {
-        
-        $modelos=$request->except('_token');
+        $request->validate([
+            'nombre'=>'required',
+            'nid'=>'required|integer|between:0,10000000000',
+            'expedido'=>'required',
+            'fechan'=>'required|date',
+            'direccion'=>'required',
+            'telefono'=>'required',
+            'correo'=>'required|email:rfc,dns',
+            'estatura'=>'required|numeric|between:0,3',
+            'busto'=>'required|integer|between:0,1000',
+            'cintura'=>'required|integer|between:0,1000',
+            'cadera'=>'required|integer|between:0,1000',
+            'cabello'=>'required',
+            'ojos'=>'required',
+            'piel'=>'required',
+            'pantalon'=>'required',
+            'camisa'=>'required',
+            'calzado'=>'required',
+            'nombre_acudiente'=>'required',
+            'nid_acudiente'=>'required|integer|between:0,10000000000',
+            'expedido_acudiente'=>'required',
+            'parentezco'=>'required',
+            'direccion_acudiente'=>'required',
+            'telefono_acudiente'=>'required',
+            'foto'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:12000',
+            'sex_id'=>'required',
+            'rh_id'=>'required',
+            'identification_id'=>'required',
+            'meses_pagados'=>'required|integer|between:0,24',
+            'fecha_pago'=>'required|date',
+
+
+
+            
+        ]);
+       
+        $modelo=$request->except('_token');
         
 
         if($foto=$request->file('foto')){
             $rutaGimg='images/modelos';
             $imgP=date('YmdHis').".".$foto->getClientOriginalExtension();
             $foto->move($rutaGimg, $imgP);
-            $modelos['foto']="$imgP";
+            $modelo['foto']="$imgP";
         }
-        $modelos['estado']=true;
+        $modelo['estado']=true;
         
-        $guardar = new modelo($modelos);
-        //$guardar->nombre= $modelos['estado'];
-        $guardar->save();
-        //modelo::create($modelos);
+        $modelo['fecha_vence']=date("Y-m-d",strtotime($request->fecha_pago."+".$request->meses_pagados."month"));
         
-       
+        $modelo = new modelo($modelo);
+        
+        $modelo->save();
 
-        $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelos]);
 
-       
+        
 
+        // Registrando en caja
+        $registro =Tarifa::findOrFail(1);
+        $valor=intval($modelo->meses_pagados)*$registro->valor;
+        $cajero= new HomeController;
+        $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+
+
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $fechafac=$fechafac->format('Y-m-d');
+        $modelo->fechafac=$fechafac;
+        $valor=Tarifa::find(1)->valor;
+        $tipo=Tarifa::find(1)->tipo;
+        $modelo->cantidad=$modelo->meses_pagados;
+        $modelo->valor=$valor;
+        $modelo->tipo=$tipo;
+        $modelo->total=$valor*$modelo->cantidad;
+        $modelo->importe=$valor*$modelo->cantidad;
+
+        // PDF
+        $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
         return $pdf->download('pago.pdf');
     
     }
 
-    public function show(modelo $modelo){}
-    public function edit(modelo $modelo){}
-    public function update(Request $request, modelo $modelo){}
+    public function show(modelo $modelo){
+
+        $now =new Carbon( Carbon::now()->format('Y-m-d'));
+        $modelo->edad=$now->diffInYears($modelo->fechan);
+        $facebook=json_encode($modelo->facebook);
+        $instagram=json_encode($modelo->instagram);
+        $tiktok=json_encode($modelo->tiktok);
+        $twitter=json_encode($modelo->twitter);
+        $id=identification::find($modelo->identification_id);
+        $sex=sex::find($modelo->sex_id);
+        $rh=rh::find($modelo->rh_id);
+       
+        return view('empleado.perfil',compact('modelo','id','sex','rh'))
+        ->with('instagram',$instagram)
+        ->with('tiktok',$tiktok)
+        ->with('twitter',$twitter)
+        ->with('facebook',$facebook);
+    }
+    public function edit(modelo $modelo){
+        $sexes=sex::all();
+        $identifications=identification::all();
+        $rhs=rh::all();
+
+        $identificacion=identification::find($modelo->identification_id);
+        $sex=sex::find($modelo->sex_id);
+        $rh=rh::find($modelo->rh_id);
+
+
+        
+        
+        return view('admin.edit',compact('sexes','identifications','rhs','modelo','identificacion','sex','rh'));
+    }
+    public function update(Request $request, modelo $modelo){
+        $request->validate([
+            'nombre'=>'required',
+            'nid'=>'required|integer|between:0,10000000000',
+            'expedido'=>'required',
+            'fechan'=>'required|date',
+            'direccion'=>'required',
+            'telefono'=>'required',
+            'correo'=>'required',
+            'estatura'=>'required|numeric|between:0,3',
+            'busto'=>'required|integer|between:0,1000',
+            'cintura'=>'required|integer|between:0,1000',
+            'cadera'=>'required|integer|between:0,1000',
+            'cabello'=>'required',
+            'ojos'=>'required',
+            'piel'=>'required',
+            'pantalon'=>'required',
+            'camisa'=>'required',
+            'calzado'=>'required',
+            'nombre_acudiente'=>'required',
+            'nid_acudiente'=>'required',
+            'expedido_acudiente'=>'required',
+            'parentezco'=>'required',
+            'direccion_acudiente'=>'required',
+            'telefono_acudiente'=>'required',
+            'foto'=>'image|mimes:jpeg,png,jpg,gif,svg|max:12000'
+
+            
+        ]);
+
+        if (!empty( $request->file('foto'))) {
+                if($foto=$request->file('foto')){
+                $rutaGimg='images/modelos';
+                $imgP=date('YmdHis').".".$foto->getClientOriginalExtension();
+                $foto->move($rutaGimg, $imgP);
+                $request->foto="$imgP";
+                $modelo->foto=$request->foto;
+            }
+        }
+        
+
+    
+
+        $modelo->nombre=$request->nombre;
+        $modelo->nid=$request->nid;
+        
+        $modelo->expedido=$request->expedido;
+        $modelo->fechan=$request->fechan;
+        $modelo->direccion=$request->direccion;
+        $modelo->telefono=$request->telefono;
+        $modelo->correo=$request->correo;
+        $modelo->estatura=$request->estatura;
+        $modelo->busto=$request->busto;
+        $modelo->cintura=$request->cintura;
+        $modelo->cadera=$request->cadera;
+        $modelo->cabello=$request->cabello;
+        $modelo->ojos=$request->ojos;
+        $modelo->piel=$request->piel;
+        $modelo->pantalon=$request->pantalon;
+        $modelo->camisa=$request->camisa;
+        $modelo->calzado=$request->calzado;
+        $modelo->facebook=$request->facebook;
+        $modelo->instagram=$request->instagram;
+        $modelo->twitter=$request->twitter;
+        $modelo->tiktok=$request->tiktok;
+        $modelo->otro=$request->otro;
+        $modelo->nombre_acudiente=$request->nombre_acudiente;
+        $modelo->nid_acudiente=$request->nid_acudiente;
+        $modelo->direccion_acudiente=$request->direccion_acudiente;
+        $modelo->expedido_acudiente=$request->expedido_acudiente;
+        $modelo->parentezco=$request->parentezco;
+        $modelo->telefono_acudiente=$request->telefono_acudiente;
+        $modelo->sex_id =$request->sex_id;
+        $modelo->identification_id=$request->identification_id;
+        $modelo->rh_id =$request->rh_id ;
+       
+        $modelo->save();
+        return view('admin.index');
+    }
+
     public function renovar(modelo $modelo)
     {
+        $nombre=$modelo->nombre;
+        $id=$modelo->id;
+        $vence=$modelo->fecha_vence;
+       
+        return view('admin.renovar')->with('nombre', $nombre)->with('id',$id)->with('vence',$vence);
+    }
+
+    public function renovarpost(Request $request , modelo $modelo){
+
+        $now =new Carbon( Carbon::now()->format('Y-m-d'));
+        $inicio=new Carbon($modelo->fecha_pago);
+        $inicion=new Carbon($request->fecha_pago);
         
-        echo 'hola';
+        $vence=new Carbon($modelo->fecha_vence);
+        $mes=intval( $request->meses_pagados);
+        $modelo->meses_pagados=$mes; 
+
+       
+
+
+
+        
+        if($now->lte($vence)&& $inicion->lte($vence)){
+            $diff = $vence->diffInDays($now);
+            $modelo->fecha_pago=date_format($now,"Y-m-d");
+            $vmm=date("Y-m-d",strtotime($now."+".$mes."month"));
+            $vmm2=date("Y-m-d",strtotime($vmm."+".$diff."day"));
+            
+            $modelo->fecha_vence=$vmm2;
+             
+            $modelo->save();
+           
+            //dd($inicio,$inicion, $now,$vence,$vencen,$mes,$diff,$modelo);
+        }elseif($now->gt($vence)&& $inicion->lte($vence)){
+            $modelo->fecha_pago=date_format($inicion,"Y-m-d");
+            $vmm=date("Y-m-d",strtotime($inicion."+".$mes."month"));
+
+            $diff = $vence->diffInDays($inicion);
+            $vmm2=date("Y-m-d",strtotime($vmm."+".$diff."day"));
+            
+            $modelo->fecha_vence=$vmm2;
+            $modelo->save();
+          
+            
+        }elseif($now->lte($vence)&& $inicion->gt($vence)){
+            $diff = $inicion->diffInDays($now);
+            $modelo->fecha_pago=date_format($now,"Y-m-d");
+            $vmm=date("Y-m-d",strtotime($inicion."+".$mes."month"));
+            $vmm2=date("Y-m-d",strtotime($vmm."+".$diff."day"));
+            $modelo->fecha_vence=$vmm;
+            
+            $modelo->save();
+           
+            
+
+        }else{
+            $modelo->fecha_pago=date_format($inicion,"Y-m-d");
+            $vmm=date("Y-m-d",strtotime($inicion."+".$mes."month"));
+            $modelo->fecha_vence=$vmm;
+            
+            $modelo->save();
+           
+        }
+
+        // Registrando en caja
+        
+        $tarifa =Tarifa::findOrFail(1);
+        $valor=intval($mes)*$tarifa->valor;
+        $cajero= new HomeController;
+        $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
+
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $fechafac=$fechafac->format('Y-m-d');
+        $modelo->fechafac=$fechafac;
+        $valor=Tarifa::find(1)->valor;
+        $tipo=Tarifa::find(1)->tipo;
+        $modelo->cantidad=$mes;
+        $modelo->valor=$valor;
+        $modelo->tipo=$tipo;
+        $modelo->total=$valor*$mes;
+        $modelo->importe=$valor*$mes;
+
+        
+        $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
+
+        return $pdf->download('pago.pdf');     
+        
+        
     }
 
 
@@ -103,64 +372,226 @@ class ModeloController extends Controller
         
     }
 
-    public function tarifa(){
-        $anterior = Tarifa::all();
-        $mes=$anterior['0']->tarifaMes;
-        $pasarela=$anterior['0']->tarifaP;
 
-        $mes=json_encode($mes);
-        $pasarela=json_encode($pasarela);
+    public function caja(){
         
-        
-        return view('admin.tarifa')
-        ->with('pasarela',$pasarela)
-        ->with('mes', $mes);
+        return view('admin.caja');
     }
 
-    public function tarifaMes(Request $request){
+    public function cajapost(Request $request){
+        $modelo=new modelo();
+        $modelo->nombre=$request->paga;
+        $modelo->correo=$request->paga;
+       
+         // Registrando en caja
+         $cajero= new HomeController;
+         $ejecutar=$cajero->cajero($request->concepto,intval($request->valor), $request->paga);
+
+         $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+         $fechafac=$fechafac->format('Y-m-d');
+         $modelo->fechafac=$fechafac;
+         $valor=$request->valor;
+         $tipo=$request->concepto;
+         $modelo->cantidad=1;
+         $modelo->valor=$valor;
+         $modelo->tipo=$tipo;
+         $modelo->total=$valor;
+         $modelo->importe=$valor;
+ 
+         // PDF
+         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
+         return $pdf->download('pago.pdf');
+
         
-
-        $tarifa=$request->except('_token');
-
-
-        $registro =Tarifa::findOrFail(1);
-        $registro->tarifaMes=intval($request->input('tarifaMes')) ;
-        $registro->save();
-
-        $anterior = Tarifa::all();
-        $mes=$anterior['0']->tarifaMes;
-        $pasarela=$anterior['0']->tarifaP;
-
-        $mes=json_encode($mes);
-        $pasarela=json_encode($pasarela);
-        
-        
-        return view('admin.tarifa')
-        ->with('pasarela',$pasarela)
-        ->with('mes', $mes);
     }
 
-    public function tarifaP(Request $request){
-        
-        $tarifa=$request->except('_token');
 
+    public function estadisticas(){
+        $usuarios=modelo::all();
 
-        $registro =Tarifa::findOrFail(1);
-        $registro->tarifaP=intval($request->input('tarifaP')) ;
+        $now =new Carbon( Carbon::now()->format('Y-m-d'));
         
-        $registro->save();
 
-        $anterior = Tarifa::all();
-        $mes=$anterior['0']->tarifaMes;
-        $pasarela=$anterior['0']->tarifaP;
+        $data=[];
+        $yedad=[0,0,0,0,0,0];
+        $yestatura=[0,0,0,0,0,0,0,0];
+        $rangoses=['<0.8', '0.8 - 1','1 - 1.2','1.2 - 1.4','1.4 - 1.6', '1.6 - 1.8', '1.8 - 2', '>2'];
+        $rangos=['0-5','6-11', '12-18', '19-26','27-59','>60'];
+        
+        
+        foreach ($usuarios as $usuario){
+            $data['edad'][]=$now->diffInYears($usuario->fechan);;
+            $data['estatura'][]=$usuario->estatura;
+            $data['sexo'][]=$usuario->sex_id;
+            $data['busto'][]=$usuario->busto;
+            $data['cintura'][]=$usuario->cintura;
+            $data['cadera'][]=$usuario->cadera;
+        }
+        
+        $promedio=round(array_sum( $data['edad'])/count($data['edad']),2);
+        $promb=round(array_sum( $data['busto'])/count($data['busto']),2);
+        $promci=round(array_sum( $data['cintura'])/count($data['cintura']),2);
+        $promca=round(array_sum( $data['cadera'])/count($data['cadera']),2);
+       
+        for ($i=0;$i<count($data['estatura']); $i++){
+            if($data['estatura'][$i]>=0 && $data['estatura'][$i]<=0.8){
+                $yestatura[0]++;
+            }
+             if($data['estatura'][$i]>0.8 && $data['estatura'][$i]<=1){
+                $yestatura[1]++;
+            }
+             if($data['estatura'][$i]>1 && $data['estatura'][$i]<=1.2){
+                $yestatura[2]++;
+            }
+             if($data['estatura'][$i]>1.2 && $data['estatura'][$i]<=1.4){
+                $yestatura[3]++;
+            }
+             if($data['estatura'][$i]>1.4 && $data['estatura'][$i]<=1.6){
+                $yestatura[4]++;
+            }
+            if($data['estatura'][$i]>1.6 && $data['estatura'][$i]<=1.8){
+                $yestatura[5]++;
+            }
+            if($data['estatura'][$i]>1.8 && $data['estatura'][$i]<=2){
+                $yestatura[6]++;
+            }
+             if($data['estatura'][$i]>2 ){
+                $yestatura[7]++;
+            }
+        }
+        
 
-        $mes=json_encode($mes);
-        $pasarela=json_encode($pasarela);
+        for ($i=0;$i<count($data['edad']); $i++){
+            if($data['edad'][$i]>=0 && $data['edad'][$i]<=5){
+                $yedad[0]++;
+            }
+             if($data['edad'][$i]>5 && $data['edad'][$i]<=11){
+                $yedad[1]++;
+            }
+             if($data['edad'][$i]>11 && $data['edad'][$i]<=18){
+                $yedad[2]++;
+            }
+             if($data['edad'][$i]>18 && $data['edad'][$i]<=26){
+                $yedad[3]++;
+            }
+             if($data['edad'][$i]>26 && $data['edad'][$i]<=59){
+                $yedad[4]++;
+            }
+             if($data['edad'][$i]>60 ){
+                $yedad[5]++;
+            }
+        }
         
         
-        return view('admin.tarifa')
-        ->with('pasarela',$pasarela)
-        ->with('mes', $mes);
+
+        $longitud = count($yedad);
+        for ($i = 0; $i < $longitud; $i++) {
+            for ($j = 0; $j < $longitud - 1; $j++) {
+                if ($yedad[$j] < $yedad[$j + 1]) {
+                    $temporal = $yedad[$j];
+                    $temporal2 = $rangos[$j];
+                    $yedad[$j] = $yedad[$j + 1];
+                    $rangos[$j] = $rangos[$j + 1];
+                    $yedad[$j + 1] = $temporal;
+                    $rangos[$j + 1] = $temporal2;
+                }
+            }
+        }
+
+        $longitud = count($yestatura);
+        for ($i = 0; $i < $longitud; $i++) {
+            for ($j = 0; $j < $longitud - 1; $j++) {
+                if ($yestatura[$j] < $yestatura[$j + 1]) {
+                    $temporal = $yestatura[$j];
+                    $temporal2 = $rangoses[$j];
+                    $yestatura[$j] = $yestatura[$j + 1];
+                    $rangoses[$j] = $rangoses[$j + 1];
+                    $yestatura[$j + 1] = $temporal;
+                    $rangoses[$j + 1] = $temporal2;
+                }
+            }
+        }
+
         
+        $cajas=caja::all();
+        $valor=[];
+        
+        foreach ($cajas as $caja ) {
+            $data['fecha'][]=substr( $caja->created_at->toDateString(),0,-3);
+
+        }
+        $fechas=array_values(array_unique($data['fecha']));
+        for ($i=0; $i < count($fechas); $i++) {
+             $mes=intval( substr($fechas[$i],5));
+             $anio=intval( substr($fechas[$i],0,4));
+             
+            $fil = caja::whereYear('created_at', '=', $anio)->whereMonth('created_at', '=', $mes)->get();
+            $valor[$i]=0;
+            foreach ($fil as $fi ) {
+                $aux=$fi->valor;
+                $valor[$i]=$valor[$i]+$aux;
+                
+            }
+            
+           
+           
+        }
+        $data['fecha']=$fechas;
+        $data['valores']=$valor;
+        
+        
+        
+        $empleados=Admin::all();
+        $nempleados=$empleados->count();
+        $nregistros=count($data['edad']);
+        
+        
+        
+        $data['edad']=$yedad;
+        $data['rangos']=$rangos;
+        $data['estatura']=$yestatura;
+        $data['rangoses']=$rangoses;
+        $data['sexo']=array_count_values($data['sexo']);
+        $data['data']=json_encode($data);
+        //$data['rangos']=json_encode($rangos);
+
+        return view('admin.estadisticas',$data)->with('nregistros',$nregistros)
+        ->with('nempleados',$nempleados)
+        ->with('promb',$promb)
+        ->with('promci',$promci)
+        ->with('promca',$promca)
+        ->with('promedio',$promedio);
+    }
+    public function pasarela(){
+        $modelos=modelo::all();
+       
+        return view('admin.pasarela');
+    }
+    public function pasarelapost(modelo $modelo){
+        
+        
+        // Registrando en caja
+        $registro =Tarifa::findOrFail(2);
+        
+        $valor=$registro->valor;
+        
+        $cajero= new HomeController;
+        $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $fechafac=$fechafac->format('Y-m-d');
+        $modelo->fechafac=$fechafac;
+        $valor=Tarifa::find(2)->valor;
+        $tipo=Tarifa::find(2)->tipo;
+        $modelo->cantidad=1;
+        $modelo->valor=$valor;
+        $modelo->tipo=$tipo;
+        $modelo->total=$valor;
+        $modelo->importe=$valor;
+
+        // PDF
+        $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
+        return $pdf->download('pago.pdf');
+        
+
     }
 }

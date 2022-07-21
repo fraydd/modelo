@@ -2,11 +2,13 @@
 
 @section('content')
 
+
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">lista de empleados</div>
+                <div class="card-header"><h5>lista de empleados</h5></div>
 
                 <div class="card-body">
                 <table class="table table-strped  table-hover shadow-sm " id="tabla">
@@ -15,7 +17,7 @@
                                 
                                 <th>Nombre </th>
                                 <th>Identificación</th>
-                                <th>Fecha de ingreso</th>
+                                <th>Fecha de Contratación</th>
                                 <th >&nbsp;</th>
                                 
                                 

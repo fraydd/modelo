@@ -19,18 +19,17 @@ class RoleSeeder extends Seeder
         /* Permisos */
         $role1=Role::create(['name'=>'admin']);
         $role2=Role::create(['name'=>'empleado']);
+        $role3=Role::create(['name'=>'root']);
 
         Permission::create(['name'=>'home'])->syncRoles([$role1, $role2]);
         Permission::create(['name'=>'welcome'])->syncRoles([$role1, $role2]);
         Permission::create(['name'=>'modelos.create'])->syncRoles([$role1]);
-        Permission::create(['name'=>'modelos.index'])->syncRoles([$role1]);
-        Permission::create(['name'=>'modelos.destroy'])->syncRoles([$role1]);
-        Permission::create(['name'=>' modelos.borrar'])->syncRoles([$role1]);
 
-        Permission::create(['name'=>'modelos.store'])->syncRoles([$role1]);
+
 
         Permission::create(['name'=>'empleado.index'])->syncRoles([$role2]);
-        Permission::create(['name'=>'empleado.store'])->syncRoles([$role2]);
-        Permission::create(['name'=>'empleado.perfil'])->syncRoles([$role2]);
+
+
+        Permission::create(['name'=>'root'])->syncRoles([$role3]);
     }
 }

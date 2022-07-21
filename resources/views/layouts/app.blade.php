@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" >
 <head>
     <meta charset="utf-8">
     <meta name="google" content="notranslate" />
@@ -14,6 +14,8 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}" ></script>
+    <script src="{{ asset('js/chart.min.js') }}" ></script>
+
 
     <!-- Datatables -->
     <!-- <link rel="stylesheet" type="text/css" href="{{ asset('css/datatables.min.css') }}"/> -->
@@ -32,16 +34,24 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('css/bulma.css') }}" rel="stylesheet"> -->
 </head>
 <body>
 
+
+
+<style>
+    .red{
+        border-radius: 100%;
+    }
+</style>
 
 
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light sm-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/home') }}">
-                    Home
+                    <img class="red" style="width:50px ; height:50px;" src="{{asset('images/cmm.png')}}" alt=""> 
                     
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -59,15 +69,57 @@
 
                         @can('modelos.create')
                         <li class="nav-item">
-                              <a class="nav-link" href={{route('modelos.index')}}> Renovar</a> 
+                              <a class="nav-link" href={{route('modelos.index')}}> Listar</a> 
                         </li>
                         @endcan
-                        @can('modelos.create')
+                        @can('root')
                         <li class="nav-item">
                               <a class="nav-link" href={{route('modelos.tarifa')}}> Tarifas</a> 
                         </li>
                         @endcan
 
+                        @can('modelos.create')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('modelos.pasarela')}}> Pasarela</a> 
+                        </li>
+                        @endcan
+
+                        @can('modelos.create')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('modelos.caja')}}> Caja</a> 
+                        </li>
+                        @endcan
+
+                        @can('modelos.create')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('modelos.estadisticas')}}> Estadísticas</a> 
+                        </li>
+                        @endcan
+
+                        @can('root')
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Empleados
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                
+                                        <li><a class="dropdown-item" href="{{ route('admin.index') }}">Listar  </a></li>
+                                        <li><a class="dropdown-item" href="{{ route('admin.create') }}"> Registrar </a></li>
+                                        <hr>
+                                        <li><a class="nav-link" href={{route('admin.ingresose')}}> Registro de ingresos</a> </li>
+
+                                </ul>
+                            </li>
+                        @endcan
+                        @can('root')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('admin.ingresos')}}> Ingresos de usuarios</a> 
+                        </li>
+                        @endcan
+                        @can('root')
+                        <li class="nav-item">
+                        </li>
+                        @endcan
                         @can('empleado.index')
                         <li class="nav-item">
                               <a class="nav-link" href={{route('empleado.index')}}> Ingreso</a> 
@@ -86,6 +138,8 @@
                         </li>
                         @endcan
 
+
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -98,15 +152,20 @@
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
+                            
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
+
                         @else
                         
                             <li class="nav-item dropdown">
+                            @can('root')
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/register') }}">Registrar</a>
+                            </li>
+                        
+                    @endcan
+
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
@@ -121,10 +180,7 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
-                                    @can('modelos.create')
-                                        <a class="dropdown-item" href="{{ route('admin.index') }}">Listar empleados </a>
-                                        <a class="dropdown-item" href="{{ route('admin.create') }}"> Registrar empleado</a>
-                                    @endcan
+
                                 </div>
                             </li>
                         @endguest
@@ -133,11 +189,7 @@
             </div>
         </nav>
 
-
-
-        
-
-        <main class="py-4">
+        <main  class="py-1">
             @yield('content')
         </main>
     </div>

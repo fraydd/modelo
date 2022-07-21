@@ -76,6 +76,8 @@
                         
                        
                     </div>
+
+                    
                 </div>
 
 
@@ -85,6 +87,11 @@
                     {{$estado=json_decode(session('estado'))}}
                     {{$fecha_v=json_decode(session('fecha_v'))}}
                 </div>
+
+
+
+
+                
                     
 
                     <script>

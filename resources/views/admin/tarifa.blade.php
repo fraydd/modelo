@@ -21,7 +21,7 @@
                         <div class="input-group">
                             <span class="input-group-text"> $</span>
                             <input  name="tarifaMes" id="tarifaMes"required type="number"  class="form-control"  autocomplete="off">
-                            <button type="buton onclick" value="enviar" class=" btn btn-outline-secondary" onclick="
+                            <button type="buton onclick" value="enviar" class=" btn btn-outline-success" onclick="
                                 const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
                                 var v=document.getElementById('tarifaMes').value
                                 var a=f.format(v);
@@ -46,7 +46,7 @@
                         <div class="input-group">
                             <span class="input-group-text"> $</span>
                             <input  name="tarifaP" id="tarifaP" required type="number" class="form-control"  autocomplete="off">
-                            <button type="buton onclick" value="enviar" class=" btn btn-outline-secondary" onclick="
+                            <button type="buton onclick" value="enviar" class=" btn btn-outline-success" onclick="
                                 const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
                                 var v=document.getElementById('tarifaP').value
                                 var a=f.format(v);
