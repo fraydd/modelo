@@ -43,6 +43,7 @@ Route::post('caja', [App\Http\Controllers\ModeloController::class, 'cajapost'])-
 Route::get('estadisticas',[App\Http\Controllers\ModeloController::class, 'estadisticas'])->name('modelos.estadisticas');
 Route::get('modelos/{modelo}/pasarela', [App\Http\Controllers\ModeloController::class, 'pasarelapost'])->name('modelos.pasarelapost');
 Route::put('update/{usuario}',[App\Http\Controllers\ModeloController::class, 'update'])->name('update');
+Route::put('modelos/deuda/{modelo}', 'App\Http\Controllers\ModeloController@deudaput')->name('modelos.deudaput');
 
 
 Route::get('tarifa', 'App\Http\Controllers\AdminController@tarifa')->name('modelos.tarifa');

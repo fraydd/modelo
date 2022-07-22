@@ -72,6 +72,7 @@ class ModeloController extends Controller
    
     public function store(Request $request)
     {
+        
         $request->validate([
             'nombre'=>'required',
             'nid'=>'required|integer|between:0,10000000000',
@@ -102,13 +103,14 @@ class ModeloController extends Controller
             'identification_id'=>'required',
             'meses_pagados'=>'required|integer|between:0,24',
             'fecha_pago'=>'required|date',
+            'abona'=>'integer|gt:0'
 
 
 
             
         ]);
        
-        $modelo=$request->except('_token');
+        $modelo=$request->except('_token','abona','pago');
         
 
         if($foto=$request->file('foto')){
@@ -119,32 +121,65 @@ class ModeloController extends Controller
         }
         $modelo['estado']=true;
         
+        
         $modelo['fecha_vence']=date("Y-m-d",strtotime($request->fecha_pago."+".$request->meses_pagados."month"));
         
-        $modelo = new modelo($modelo);
+        if (empty($request->pago)) {
+            $modelo['deuda']=0;
+            $modelo = new modelo($modelo);
+            $modelo->save();
+
+            // Registrando en caja
+            $registro =Tarifa::findOrFail(1);
+            $valor=intval($modelo->meses_pagados)*$registro->valor;
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+
+            $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+            $fechafac=$fechafac->format('Y-m-d');
+            $modelo->fechafac=$fechafac;
+            $valor=Tarifa::find(1)->valor;
+            $tipo=Tarifa::find(1)->tipo;
+            $modelo->cantidad=$modelo->meses_pagados;
+            $modelo->valor=$valor;
+            $modelo->tipo=$tipo;
+            $modelo->total=$valor*$modelo->cantidad;
+            $modelo->importe=$valor*$modelo->cantidad;
+
+
+        } else{
+            $registro =Tarifa::findOrFail(1);
+            $modelo['deuda']=($registro->valor*intval( $request->meses_pagados))- $request->abona;
+            $modelo = new modelo($modelo);
+            $modelo->save();
+
+            // Registrando en caja
+            $registro =Tarifa::findOrFail(1);
+            $valor=$request->abona;
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+
+            $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+            $fechafac=$fechafac->format('Y-m-d');
+            $modelo->fechafac=$fechafac;
+            $valor=Tarifa::find(1)->valor;
+            $tipo=Tarifa::find(1)->tipo;
+            $modelo->cantidad=$modelo->meses_pagados;
+            $modelo->valor=$valor;
+            $modelo->tipo=$tipo;
+            $modelo->total=$request->abona;
+            $modelo->importe= $request->abona;
+
+        }
         
-        $modelo->save();
+
 
 
         
 
-        // Registrando en caja
-        $registro =Tarifa::findOrFail(1);
-        $valor=intval($modelo->meses_pagados)*$registro->valor;
-        $cajero= new HomeController;
-        $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
 
 
-        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
-        $fechafac=$fechafac->format('Y-m-d');
-        $modelo->fechafac=$fechafac;
-        $valor=Tarifa::find(1)->valor;
-        $tipo=Tarifa::find(1)->tipo;
-        $modelo->cantidad=$modelo->meses_pagados;
-        $modelo->valor=$valor;
-        $modelo->tipo=$tipo;
-        $modelo->total=$valor*$modelo->cantidad;
-        $modelo->importe=$valor*$modelo->cantidad;
+
 
         // PDF
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
@@ -163,11 +198,23 @@ class ModeloController extends Controller
         $id=identification::find($modelo->identification_id);
         $sex=sex::find($modelo->sex_id);
         $rh=rh::find($modelo->rh_id);
+
+        $deuda=$modelo->deuda;
+        if (!empty($deuda)) {
+            session()->flash('deuda');
+            
+
+        }
+        
+            
+
+
        
         return view('empleado.perfil',compact('modelo','id','sex','rh'))
         ->with('instagram',$instagram)
         ->with('tiktok',$tiktok)
         ->with('twitter',$twitter)
+        
         ->with('facebook',$facebook);
     }
     public function edit(modelo $modelo){
@@ -275,6 +322,10 @@ class ModeloController extends Controller
 
     public function renovarpost(Request $request , modelo $modelo){
 
+
+
+        
+        
         $now =new Carbon( Carbon::now()->format('Y-m-d'));
         $inicio=new Carbon($modelo->fecha_pago);
         $inicion=new Carbon($request->fecha_pago);
@@ -332,21 +383,48 @@ class ModeloController extends Controller
 
         // Registrando en caja
         
-        $tarifa =Tarifa::findOrFail(1);
-        $valor=intval($mes)*$tarifa->valor;
-        $cajero= new HomeController;
-        $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
+        if(empty($request->pago)){
+            $tarifa =Tarifa::findOrFail(1);
+            $valor=intval($mes)*$tarifa->valor;
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
 
-        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
-        $fechafac=$fechafac->format('Y-m-d');
-        $modelo->fechafac=$fechafac;
-        $valor=Tarifa::find(1)->valor;
-        $tipo=Tarifa::find(1)->tipo;
-        $modelo->cantidad=$mes;
-        $modelo->valor=$valor;
-        $modelo->tipo=$tipo;
-        $modelo->total=$valor*$mes;
-        $modelo->importe=$valor*$mes;
+            $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+            $fechafac=$fechafac->format('Y-m-d');
+            $modelo->fechafac=$fechafac;
+            $valor=Tarifa::find(1)->valor;
+            $tipo=Tarifa::find(1)->tipo;
+            $modelo->cantidad=$mes;
+            $modelo->valor=$valor;
+            $modelo->tipo=$tipo;
+            $modelo->total=$valor*$mes;
+            $modelo->importe=$valor*$mes;
+        }else{
+            
+            $tarifa =Tarifa::findOrFail(1);
+            $valor=$request->abona;
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
+
+            $modelo->deuda=$modelo->deuda + (($tarifa->valor*$mes) - $request->abona);
+            $modelo->save();
+
+            $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+            $fechafac=$fechafac->format('Y-m-d');
+            $modelo->fechafac=$fechafac;
+            $valor=Tarifa::find(1)->valor;
+            $tipo=Tarifa::find(1)->tipo;
+
+            $modelo->cantidad=$mes;
+            $modelo->valor=$valor;
+            $modelo->tipo=$tipo;
+            $modelo->total=$request->abona;
+            $modelo->importe=$request->abona;
+        }
+
+        
+
+
 
         
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
@@ -355,7 +433,57 @@ class ModeloController extends Controller
         
         
     }
+    public function deudaput(Request $request , modelo $modelo){
 
+        $request->validate([
+            
+            'deuda'=>'integer|gt:0'
+
+
+
+            
+        ]);
+        
+
+        $anterior=$modelo->deuda;
+        $modelo->deuda=$request->deuda;
+        $modelo->save();
+
+        $now =new Carbon( Carbon::now()->format('Y-m-d'));
+        $modelo->edad=$now->diffInYears($modelo->fechan);
+        $facebook=json_encode($modelo->facebook);
+        $instagram=json_encode($modelo->instagram);
+        $tiktok=json_encode($modelo->tiktok);
+        $twitter=json_encode($modelo->twitter);
+        $id=identification::find($modelo->identification_id);
+        $sex=sex::find($modelo->sex_id);
+        $rh=rh::find($modelo->rh_id);
+
+        $deuda=$modelo->deuda;
+        if (!empty($deuda)) {
+            session()->flash('deuda');
+            
+
+        }
+
+        if ($request->deuda<=$anterior) {
+            $valor=$anterior-$request->deuda;
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero('Abono deuda', $valor,$modelo->nombre);
+        }
+        
+
+
+
+       
+        return view('empleado.perfil',compact('modelo','id','sex','rh'))
+        ->with('instagram',$instagram)
+        ->with('tiktok',$tiktok)
+        ->with('twitter',$twitter)
+        
+        ->with('facebook',$facebook);
+       
+    }
 
     public function destroy(modelo $modelo){}
 

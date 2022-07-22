@@ -23,7 +23,19 @@
                     <br>
                     <label for="meses_pagados">Cantidad de meses</label>
 
+                    
+
                     <input class="form-control" min="0" type="number" name="meses_pagados" id="meses_pagados" autocomplete="off">
+                    <br>
+                    <div class="form-check ">
+                        <input id="pago" class="form-check-input" type="checkbox"  name="pago" value="false">
+                        <label for="pago" class="form-check-label">¿Abonar una parte?</label>
+                    </div>
+
+                    <br>
+
+                    <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="Valor en pesos">
+
                     <br>
                     <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success">
                  </form>
@@ -35,13 +47,30 @@
 
 <script>
     $(document).ready(function(){
+        $("#pago").val("false");
+        $("#pago").change(function(){
+            if ($("#pago").val()=='true') {
+                $("#pago").val("false");
+                $( "#abona" ).prop( "disabled", true );
+
+            }
+            else if ($("#pago").val()=='false'){
+                $("#pago").val("true");
+                $( "#abona" ).prop( "disabled", false );
+            }
+
+            const pago= $("#pago").val();
+            console.log(pago)
+        })
+
+       
         
         document.getElementById("registrar").onclick = function() {myFunction()};
 
         function myFunction() {
             setTimeout(function(){
                 location.href="{{route('modelos.index')}}"
-            },1000);
+            },3000);
             
         }
 

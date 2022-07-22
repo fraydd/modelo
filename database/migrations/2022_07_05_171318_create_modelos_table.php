@@ -63,6 +63,7 @@ class CreateModelosTable extends Migration
             $table->integer('meses_pagados');
             $table->date('fecha_pago');
             $table->date('fecha_vence');
+            $table->unsignedBigInteger('deuda')->default(0);
 
 
             $table->timestamps();

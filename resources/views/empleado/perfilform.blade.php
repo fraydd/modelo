@@ -17,7 +17,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Ingrese su clave: </span>
                     
-                    <input placeholder=" " type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input placeholder=" " autocomplete="off" type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
                     
                     <input type="submit" class="btn btn-outline-secondary" id="button-addon2">
 

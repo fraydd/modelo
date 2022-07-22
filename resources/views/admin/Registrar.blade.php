@@ -419,6 +419,30 @@
             </div>
         </div><br>
 
+    
+        <div class="form-group row">
+        <label class="control-label col-sm-3 d-flex justify-content-end" for="meses_pagados"></label>
+
+            <div class="form-check col-sm-6">
+                <input id="pago" class="form-check-input" type="checkbox" name="pago" value="true">
+                <label for="pago" class="form-check-label"><small>¿Abonar una parte?</small></label>
+            </div>
+        </div><br>
+
+
+        <div class="form-group row">
+            <label class="control-label col-sm-3 d-flex justify-content-end" for="meses_pagados">Valor a abonar</label>
+            <div class="col-sm-6">
+            <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="Valor en pesos">
+                @error('abona')
+                    <small style="color:brown ;" >*{{$message}}</small>
+                    <br>
+                @enderror
+            </div>
+        </div><br>
+
+        
+
         <div class="form-group row">
             <label class="control-label col-sm-3 d-flex justify-content-end" for="fecha_pago">Fecha de entrada en vigencia *</label>
             <div class="col-sm-6">
@@ -454,7 +478,26 @@
 
 <script>
 
-        
+$(document).ready(function(){
+
+$("#pago").val("false");
+    $("#pago").change(function(){
+        if ($("#pago").val()=='true') {
+            $("#pago").val("false");
+            $( "#abona" ).prop( "disabled", true );
+
+        }
+        else if ($("#pago").val()=='false'){
+            $("#pago").val("true");
+            $( "#abona" ).prop( "disabled", false );
+        }
+
+        const pago= $("#pago").val();
+        console.log(pago)
+    })
+
+
+
         document.getElementById("refre").onclick = function() {myFunction()};
 
         function myFunction() {
@@ -472,6 +515,7 @@
       formulario.reset();
    
   }
+})
 
 </script>
         

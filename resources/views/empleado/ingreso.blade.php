@@ -26,7 +26,7 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text">Ingrese su clave: </span>
                     
-                    <input placeholder=" " type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input placeholder=" " autocomplete="off" type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
                     
                     <input type="submit" class="btn btn-outline-secondary" id="button-addon2">
 
@@ -72,7 +72,7 @@
                     </div>
                     <br>
                     <h5 id="estado"></h5> 
-                        
+                    <p id="deuda"></p>
                         
                        
                     </div>
@@ -86,6 +86,7 @@
                     {{$foto=json_decode(session('foto'))}}
                     {{$estado=json_decode(session('estado'))}}
                     {{$fecha_v=json_decode(session('fecha_v'))}}
+                    {{$deuda=json_decode(session('deuda'))}}
                 </div>
 
 
@@ -96,6 +97,12 @@
 
                     <script>
                         $(document).ready(function(){
+                            const deuda=@json($deuda);
+                            const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
+                            var a=f.format(deuda);
+                            document.getElementById('deuda').innerHTML ='Deuda actual de:&nbsp;'+ a;
+
+
                             const estado = @json($estado);
                             const fecha_v = @json($fecha_v);
                             if(estado==1){

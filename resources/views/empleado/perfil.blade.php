@@ -40,6 +40,52 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+
+        @if(session('deuda'))
+            
+            <div class="card">
+                <div class="card-header">
+                    Adeudos
+                </div>
+                <div class="card-body">
+
+                    <p class="card-text" id="pp"></p>
+
+                    <form class="form-inline" action="{{route('modelos.deudaput',$modelo->id)}}" method="post" enctype='multipart/form-data'>
+                    @csrf
+                    @method('PUT')
+
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label for="inputPassword6" class="col-form-label">Nuevo valor</label>
+                        </div>
+                        <div class="col-auto">
+                        <input class="form-control" type="number" name="deuda" id="deuda">
+                        </div>
+                        <div class="col-auto">
+                        <input type="submit" id="registrar" value="Guardar" class="btn btn-outline-primary" onclick="
+                        const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
+                                var v=document.getElementById('deuda').value
+                                var a=f.format(v);
+                                return confirm('¿Establecer deuda en '+ a + '?')"  
+                        
+                        ">
+                       
+                            
+                        </div>
+                        @error('deuda')
+                            <small style="color:brown ;" >*{{$message}}</small>
+                            <br>
+                        @enderror
+                    </div>
+
+                    </form>
+
+                </div>
+            </div>
+            
+        @endif
+
             <div class="card">
                 <div class="card-header ">
                     
@@ -221,10 +267,19 @@
             </div>
         </div>
     </div>
+    <input id="oculto" type="text" value="{{$modelo->deuda}}"  hidden>
 </div>
 
 <script>
     $(document).ready(function(){
+
+        const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
+        var v=document.getElementById('oculto').value
+        var a=f.format(v);
+        
+
+        $("#pp").html("{{$modelo->nombre}} actualmente debe  &nbsp; "+ a);
+
         const facebook = @json($facebook).replace(/['"]+/g, '');
         const instagram = @json($instagram).replace(/['"]+/g, '');
         const tiktok = @json($tiktok).replace(/['"]+/g, '');

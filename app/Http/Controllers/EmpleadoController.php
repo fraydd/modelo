@@ -49,12 +49,15 @@ class EmpleadoController extends Controller
         $Meses=$modelo["0"]->meses_pagados;
         $Fecha_v=$modelo["0"]->fecha_vence;
 
+        $deuda=$modelo["0"]->deuda;
+
         
         // Codificacion de variables
         $estado=json_encode($Estado);
         $data= json_encode($Nombre);
         $foto= json_encode($Foto);
         $fecha_v=json_encode($Fecha_v);
+        $deuda=json_encode($deuda);
         
 
 
@@ -73,6 +76,7 @@ class EmpleadoController extends Controller
         ->with('foto', $foto)
         ->with('data', $data)
         ->with('estado',$estado)
+        ->with('deuda',$deuda)
         ->with('fecha_v',$fecha_v);
         }
     }
