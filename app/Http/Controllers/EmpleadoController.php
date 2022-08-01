@@ -34,6 +34,7 @@ class EmpleadoController extends Controller
 
         //
         $modelo=DB::table('modelos')->where('nid','=',$cc["di"])->get()->toArray();
+        
          if(empty($modelo)){
              session()->flash('error');
             return view('empleado.ingreso');
@@ -49,7 +50,20 @@ class EmpleadoController extends Controller
         $Meses=$modelo["0"]->meses_pagados;
         $Fecha_v=$modelo["0"]->fecha_vence;
 
-        $deuda=$modelo["0"]->deuda;
+       
+
+        $idmodelo=$modelo["0"]->id;
+        $adeudos=DB::table('adeudos')->where('modelo_id','=',$idmodelo)->get();
+
+        foreach ($adeudos as $adeudo ) {
+            $mas3= new Carbon(strval( $adeudo->created_at));
+            $mas3=$mas3->addMonths(3);
+            $mas3=$mas3->format('Y-m-d H:i:s');
+            $adeudo->mas3=$mas3;
+            
+
+        }
+        
 
         
         // Codificacion de variables
@@ -57,7 +71,9 @@ class EmpleadoController extends Controller
         $data= json_encode($Nombre);
         $foto= json_encode($Foto);
         $fecha_v=json_encode($Fecha_v);
-        $deuda=json_encode($deuda);
+        $adeudos=json_encode($adeudos->toJson());
+        
+        
         
 
 
@@ -69,14 +85,14 @@ class EmpleadoController extends Controller
         
         //Enviando información a la vista
         
-
+            
 
 
         return redirect('empleado')
         ->with('foto', $foto)
         ->with('data', $data)
         ->with('estado',$estado)
-        ->with('deuda',$deuda)
+        ->with('adeudos',$adeudos)
         ->with('fecha_v',$fecha_v);
         }
     }

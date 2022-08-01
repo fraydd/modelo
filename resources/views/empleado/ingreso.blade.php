@@ -16,7 +16,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header"><h5>Registro de ingreso de usuarios.</h5></div>
+                <div class="card-header"><h5>Registro de ingreso de  usuarios.</h5></div>
 
                 <div class="card-body">
                    
@@ -72,7 +72,11 @@
                     </div>
                     <br>
                     <h5 id="estado"></h5> 
-                    <p id="deuda"></p>
+                    <h5 id="a"> </h5><br>
+                    
+                    <p id="b"></p>
+                    <p id="c"></p>
+                    
                         
                        
                     </div>
@@ -86,7 +90,9 @@
                     {{$foto=json_decode(session('foto'))}}
                     {{$estado=json_decode(session('estado'))}}
                     {{$fecha_v=json_decode(session('fecha_v'))}}
-                    {{$deuda=json_decode(session('deuda'))}}
+                    {{$adeudos=json_decode(session('adeudos'))}}
+                    
+                    
                 </div>
 
 
@@ -97,30 +103,151 @@
 
                     <script>
                         $(document).ready(function(){
-                            const deuda=@json($deuda);
-                            const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
-                            var a=f.format(deuda);
-                            document.getElementById('deuda').innerHTML ='Deuda actual de:&nbsp;'+ a;
+
+
 
 
                             const estado = @json($estado);
                             const fecha_v = @json($fecha_v);
+                            var adeudos=@json($adeudos);
+                            adeudos=JSON.parse(adeudos);
+                            
+                            a=[];
+                            b=[];
+                            c=[];
+
+                            for (let i = 0; i < adeudos.length; i++) {
+                                if (adeudos[i]['tipo'].slice(0,8)=='pasarela') {
+                                    a.push(adeudos[i]);
+                                }
+                                else if(adeudos[i]['tipo'].slice(0,11)=='Mensualidad'){
+                                    b.push(adeudos[i]);
+                                }else{
+                                    c.push(adeudos[i]);
+                                }
+                                
+                            
+                                
+                            }
+
+                            
+
                             if(estado==1){
                                 var fondo = document.getElementById('fondo');
                                 fondo.style.backgroundColor = '#d4edda';
                                 
                                 document.getElementById('estado').innerHTML ='Suscripción vigente hasta el: '+ fecha_v;
+                                if (c.length>=1) {
+                                    console.log(c.length,c)
+                                    for (let i = 0; i < c.length; i++) {
+                                        var mas3=new Date(c[i]['mas3'])
+                                        var now=Date.now();
+                                        console.log(now,mas3)
+                                        if (now>=mas3) {
+                                            console.log('niiii')
+                                            document.getElementById('a').innerHTML ='Pago de <b>'+c[i]['tipo']+'</b> retrasado';
+                                            fondo.style.backgroundColor = '#ffeaec';
+                                            const music = new Audio('sounds/access.mp3');
+                                            music.play();
+                                        }
+                                    }
+                                    
+                                }
+                                if (c.length>=1 || b.length>=1  || a.length>=1 ) {
+                                    var texto=''
+                                    const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
+
+                                    for (let j = 0; j < a.length; j++) {
+                                        var tipo=a[j]['tipo']
+                                        var valor= f.format(a[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    for (let j = 0; j < b.length; j++) {
+                                        var tipo=b[j]['tipo']
+                                        var valor= f.format(b[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    for (let j = 0; j < c.length; j++) {
+                                        var tipo=c[j]['tipo']
+                                        var valor= f.format(c[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    console.log(texto)
+
+                                    document.getElementById('b').innerHTML ='Pagos pendientes:<br>'+texto;
+                                    
+                                }
                             }else{
                                 var fondo = document.getElementById('fondo');
                                 fondo.style.backgroundColor = '#ffeaec';
                                 document.getElementById('estado').innerHTML ='Suscripción vencida';
+                                const music = new Audio('sounds/access.mp3');
+                                music.play(); 
+                                if (c.length>=1) {
+                                    console.log(c.length,c)
+                                    for (let i = 0; i < c.length; i++) {
+                                        var mas3=new Date(c[i]['mas3'])
+                                        var now=Date.now();
+                                        console.log(now,mas3)
+                                        if (now>=mas3) {
+                                            console.log('niiii')
+                                            document.getElementById('a').innerHTML ='Pago de <b>'+c[i]['tipo']+'</b> retrasado';
+                                            fondo.style.backgroundColor = '#ffeaec';
+                                            const music = new Audio('sounds/access.mp3');
+                                            music.play();
+                                        }
+                                    }
+                                    
+                                }
+                                if (c.length>=1 || b.length>=1  || a.length>=1 ) {
+                                    var texto=''
+                                    const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
+
+                                    for (let j = 0; j < a.length; j++) {
+                                        var tipo=a[j]['tipo']
+                                        var valor= f.format(a[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    for (let j = 0; j < b.length; j++) {
+                                        var tipo=b[j]['tipo']
+                                        var valor= f.format(b[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    for (let j = 0; j < c.length; j++) {
+                                        var tipo=c[j]['tipo']
+                                        var valor= f.format(c[j]['monto'])
+                                        texto+=tipo
+                                        texto+=' '+valor+'<br>'
+                                        
+                                        
+                                    }
+                                    console.log(texto)
+
+                                    document.getElementById('b').innerHTML ='Pagos pendientes:<br>'+texto;
+                                    
+                                }
                             }
                            
 
                             setTimeout(function(){
                                
                                 $(".des").fadeOut(100);
-                            },3000);  
+                            },4000);  
                         })
                         
                         

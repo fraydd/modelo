@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tarifa extends Model
+class Adeudo extends Model
 {
     use HasFactory;
-    protected $fillable=[
-    'tarifaMes',
-'tipo',
-'nombre',
-'valor'];
+
+    public function modelos(){
+        return $this->belongsTo(modelo::class);
+        }
 }

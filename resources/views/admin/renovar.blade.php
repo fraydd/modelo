@@ -3,6 +3,25 @@
 
 @section('content')
 
+<style>
+    label.error {
+    color: red;
+    font-size: 1rem;
+    display: block;
+    margin-top: 5px;
+}
+input.error {
+    border: 1px dashed red;
+    font-weight: 300;
+    color: red;
+}
+.tarifa{
+    border: solid;
+    border-radius: 20px;
+    text-align: center;
+    border-color:#c8e9ea ;
+}
+</style>
 </style>
 <div class="container">
     <div class="row justify-content-center">
@@ -12,9 +31,10 @@
 
                 <div class="card-body">
 
-                    <p>La suscripción actual tiene vigencia hasta el {{$vence}}, ¿Desea prolongarla?</p>
+                    <p>La suscripción actual tiene vigencia hasta el {{$vence}}, ¿Desea prolongarla?</p><br>
+                    <p class="tarifa" >Tarifa actual: <b>$ {{$valor}}</b>  mensuales</p>
                    
-                 <form action="{{route('modelos.renovarpost',$id)}}" method="post" enctype='multipart/form-data'>
+                 <form id="form" action="{{route('modelos.renovarpost',$id)}}" method="post" enctype='multipart/form-data'>
                     @csrf
                     @method('PUT')
                     <label for="fecha_pago">Fecha de entrada en vigencia</label>
@@ -34,7 +54,7 @@
 
                     <br>
 
-                    <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="Valor en pesos">
+                    <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="$">
 
                     <br>
                     <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success">
@@ -67,14 +87,42 @@
         
         document.getElementById("registrar").onclick = function() {myFunction()};
 
-        function myFunction() {
-            setTimeout(function(){
-                location.href="{{route('modelos.index')}}"
-            },3000);
-            
-        }
+        
+
+        $("#form").validate({
+                                rules: {
+                                    meses_pagados : {
+                                        required: true,
+                                        
+                                    },
+                                    fecha_pago:{
+                                        required: true,
+
+                                    },
+                                    abona:{
+                                        required: true,
+                                    }
+                                },
+                                messages:{
+                                    meses_pagados:{required:"Campo requerido"},
+                                    fecha_pago:{required:"Campo requerido"},
+                                    abona:{required:"Campo requerido"}
+                                    
+                                }
+                            })
 
     })
+    function myFunction() {
+            var form = $( "#form" );
+            console.log()
+            if (form.valid()==true) {
+                setTimeout(function(){
+                location.href="{{route('modelos.index')}}"
+            },3000);
+            }
+            
+            
+        }
 </script>
 
 

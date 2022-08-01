@@ -20,6 +20,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -32,16 +33,24 @@ Route::post('/empleado/salida', [App\Http\Controllers\EmpleadoController::class,
 Route::post('perfil', [App\Http\Controllers\EmpleadoController::class, 'perfilpost'])->name('empleado.perfilpost');
 
 
+
+
 Route::resource('modelos',ModeloController::class);
 Route::get('modelos/{modelo}/renovar',[App\Http\Controllers\ModeloController::class, 'renovar'])->name('modelos.renovar');
 Route::get('modelos/{modelo}/borrar',[App\Http\Controllers\ModeloController::class, 'borrar'])->name('modelos.borrar');
 Route::get('modelos/pdf',[App\Http\Controllers\ModeloController::class, 'pdf'])->name('modelos.pdf');
 Route::put('modelos/renovar/{modelo}', 'App\Http\Controllers\ModeloController@renovarpost')->name('modelos.renovarpost');
+Route::put('modelos/uniforme/{modelo}', 'App\Http\Controllers\ModeloController@uniformeput')->name('modelos.uniformeput');
+Route::put('modelos/pasarela/{modelo}', [App\Http\Controllers\ModeloController::class, 'pasarelaput'])->name('modelos.pasarelaput');
+Route::get('modelos/{adeudo}/borrarad',[App\Http\Controllers\ModeloController::class, 'borrarad'])->name('modelos.borrarad');
+Route::get('modelos/{adeudo}/editarad',[App\Http\Controllers\ModeloController::class, 'editarad'])->name('modelos.editarad');
+Route::put('modelos/editad/{adeudo}', [App\Http\Controllers\ModeloController::class, 'editad'])->name('modelos.editad');
+
+
 Route::get('pasarela',[App\Http\Controllers\ModeloController::class, 'pasarela'])->name('modelos.pasarela');
 Route::get('caja',[App\Http\Controllers\ModeloController::class, 'caja'])->name('modelos.caja');
 Route::post('caja', [App\Http\Controllers\ModeloController::class, 'cajapost'])->name('modelos.cajapost');
 Route::get('estadisticas',[App\Http\Controllers\ModeloController::class, 'estadisticas'])->name('modelos.estadisticas');
-Route::get('modelos/{modelo}/pasarela', [App\Http\Controllers\ModeloController::class, 'pasarelapost'])->name('modelos.pasarelapost');
 Route::put('update/{usuario}',[App\Http\Controllers\ModeloController::class, 'update'])->name('update');
 Route::put('modelos/deuda/{modelo}', 'App\Http\Controllers\ModeloController@deudaput')->name('modelos.deudaput');
 
@@ -49,6 +58,8 @@ Route::put('modelos/deuda/{modelo}', 'App\Http\Controllers\ModeloController@deud
 Route::get('tarifa', 'App\Http\Controllers\AdminController@tarifa')->name('modelos.tarifa');
 Route::post('tarifaMes', 'App\Http\Controllers\AdminController@tarifaMes')->name('modelos.tarifaMes');
 Route::post('tarifaP', 'App\Http\Controllers\AdminController@tarifaP')->name('modelos.tarifaP');
+Route::get('admin/{tarifa}/borrarp',[App\Http\Controllers\AdminController::class, 'borrarp'])->name('admin.borrarp');
+
 
 Route::resource('admin',AdminController::class);
 Route::get('admin/{admin}/borrar',[App\Http\Controllers\AdminController::class, 'borrar'])->name('admin.borrar');

@@ -16,15 +16,11 @@ class TarifaSeeder extends Seeder
     {
         Tarifa::create([
             'tipo'=>'Mensualidad',
+            'nombre'=>'Mensualidad',
             'valor'=>0,
             
 
         ]);
 
-        Tarifa::create([
-            'tipo'=>'Pasarela',
-            'valor'=>0,
-
-        ]);
     }
 }

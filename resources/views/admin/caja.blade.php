@@ -12,12 +12,12 @@
                    
                  <p>Nuevo ingreso</p>
 
-                 <form  action="{{ url('/caja')}}" method="post" enctype='multipart/form-data'>
+                 <form id="Formulario1"  action="{{ url('/caja')}}" method="post" enctype='multipart/form-data'>
                     @csrf
                     <div class="form-group row">
                         <label for="concepto" class="col-sm-2 col-form-label">Concepto</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="concepto" id="concepto" placeholder="Concepto">
+                            <input type="text" class="form-control" name="concepto" id="concepto" placeholder="Concepto" required>
                         </div>
                     </div>
                     <br>
@@ -25,18 +25,18 @@
                     <div class="form-group row">
                         <label for="valor" class="col-sm-2 col-form-label">Valor</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="valor" id="valor" placeholder="Valor en pesos">
+                            <input type="number" class="form-control" name="valor" id="valor" placeholder="$" required>
                             </div>
                     </div><br>
 
                     <div class="form-group row">
                         <label for="paga" class="col-sm-2 col-form-label">Nombre</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="paga" id="paga" placeholder="Persona que paga">
+                            <input type="text" class="form-control" name="paga" id="paga" placeholder="Persona que paga" required>
                             </div>
                     </div><br>
 
-                    <input id="Guardar" type="submit" value="Guardar" class="float-end btn btn-outline-success">
+                    <input id="Guardar" type="submit" value="Guardar" class="float-end btn btn-outline-success" onclick="myFunction()">
                    
                 </form>
 
@@ -76,10 +76,18 @@
     </div>
 </div>
 <script>
+    function myFunction() {
+        setTimeout(function(){
+            location.href="{{route('modelos.caja')}}"
+            },3000);
+        
+}
     
-        $('#tabla').DataTable(
+        var tabla=$('#tabla').DataTable(
             {
                 "serverSide": true,
+                "ordering": true,
+                "order": [[ 4, 'des' ]],
                 
                 "ajax":"{{url('api/datatable3')}}",
                
@@ -105,7 +113,8 @@
                     "paginate":{
                         'next':'Siguiente',
                         'previous':'Anterior'
-                    }
+                    },
+                    
                 
             }}
             

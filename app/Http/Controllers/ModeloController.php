@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Adeudo;
 use App\Models\Admin;
 use App\Models\Caja;
 use App\Models\identification;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use NumberFormatter;
 use phpDocumentor\Reflection\Types\Boolean;
 
 use function PHPUnit\Framework\isNull;
@@ -149,15 +151,24 @@ class ModeloController extends Controller
 
         } else{
             $registro =Tarifa::findOrFail(1);
-            $modelo['deuda']=($registro->valor*intval( $request->meses_pagados))- $request->abona;
+
+            $modelo['deuda']=0;
             $modelo = new modelo($modelo);
             $modelo->save();
+
+            $adeudo=new Adeudo();
+            $adeudo->tipo='Mensualidad';
+            $adeudo->monto= intval( $registro->valor)*intval($modelo->meses_pagados)-intval($request->abona);
+            $adeudo->modelo_id=$modelo->id;
+            $adeudo->save();
+
+            
 
             // Registrando en caja
             $registro =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono '.$registro->tipo, $valor, $modelo->nombre);
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -313,11 +324,13 @@ class ModeloController extends Controller
 
     public function renovar(modelo $modelo)
     {
+        $tarifa =Tarifa::findOrFail(1);
+        $valor=$tarifa->valor;
         $nombre=$modelo->nombre;
         $id=$modelo->id;
         $vence=$modelo->fecha_vence;
        
-        return view('admin.renovar')->with('nombre', $nombre)->with('id',$id)->with('vence',$vence);
+        return view('admin.renovar')->with('nombre', $nombre)->with('id',$id)->with('vence',$vence)->with('valor',$valor);
     }
 
     public function renovarpost(Request $request , modelo $modelo){
@@ -385,7 +398,9 @@ class ModeloController extends Controller
         
         if(empty($request->pago)){
             $tarifa =Tarifa::findOrFail(1);
+            
             $valor=intval($mes)*$tarifa->valor;
+            
             $cajero= new HomeController;
             $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
 
@@ -404,10 +419,15 @@ class ModeloController extends Controller
             $tarifa =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono '.$tarifa->tipo, $valor,$modelo->nombre);
 
-            $modelo->deuda=$modelo->deuda + (($tarifa->valor*$mes) - $request->abona);
-            $modelo->save();
+            $adeudo=new Adeudo();
+            $adeudo->tipo='Mensualidad';
+            $adeudo->monto= intval( $tarifa->valor)-intval($request->abona);
+            $adeudo->modelo_id=$modelo->id;
+            $adeudo->save();
+
+
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -433,6 +453,8 @@ class ModeloController extends Controller
         
         
     }
+
+    
     public function deudaput(Request $request , modelo $modelo){
 
         $request->validate([
@@ -691,35 +713,114 @@ class ModeloController extends Controller
         ->with('promedio',$promedio);
     }
     public function pasarela(){
-        $modelos=modelo::all();
-       
-        return view('admin.pasarela');
-    }
-    public function pasarelapost(modelo $modelo){
-        
-        
-        // Registrando en caja
-        $registro =Tarifa::findOrFail(2);
-        
-        $valor=$registro->valor;
-        
-        $cajero= new HomeController;
-        $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
-        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
-        $fechafac=$fechafac->format('Y-m-d');
-        $modelo->fechafac=$fechafac;
-        $valor=Tarifa::find(2)->valor;
-        $tipo=Tarifa::find(2)->tipo;
-        $modelo->cantidad=1;
-        $modelo->valor=$valor;
-        $modelo->tipo=$tipo;
-        $modelo->total=$valor;
-        $modelo->importe=$valor;
 
-        // PDF
-        $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
-        return $pdf->download('pago.pdf');
         
+
+
+        $adeudos=Adeudo::all();
+        $tipo='pasarela';
+        $pasarelas=Tarifa::all();
+        $pasar=Tarifa::all();
+        $pasarelas = $pasarelas->filter(function ($item) {
+            if ($item->tipo == 'pasarela') {
+                return $item;
+            }
+        });
+        
+        
+        foreach ($pasarelas as $pasarela ) {
+            $pasarela->valor=number_format($pasarela->valor,0,".");
+        }
+            
+        
+
+       
+    
+        
+        
+        return view('admin.pasarela',compact('pasarelas'))
+        ->with('adeudos',$adeudos)
+        ->with('pasar',$pasar);
+
+    }
+    public function pasarelaput(Request $request , modelo $modelo){
+        $consepto =Tarifa::findOrFail($request->pasarela);
+        if (empty($request->pago2)) {
+            /* paga todo */
+            
+            
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre);
+            
+        }else{
+            /* Abona */
+
+            $adeudo=new Adeudo();
+            $adeudo->tipo=$consepto->tipo.' '.$consepto->nombre;
+            $adeudo->monto= intval( $consepto->valor)-intval($request->abona2);
+            $adeudo->modelo_id=$modelo->id;
+            $adeudo->save();
+
+            // Registrando en caja
+            $cajero= new HomeController;
+            $a=$consepto->tipo.' '.$consepto->nombre;
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre);
+           
+        }
+        return  redirect('pasarela');
+
+    }
+    public function uniformeput(Request $request , modelo $modelo){
+        if (empty($request->pago)) {
+            /* paga todo */
+            $cajero= new HomeController;
+            
+            $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre);
+        }else{
+            $adeudo=new Adeudo();
+            $adeudo->tipo=$request->tipo;
+            $adeudo->monto= intval( $request->precio)-intval($request->abona);
+            $adeudo->modelo_id=$modelo->id;
+            $adeudo->save();
+
+            // Registrando en caja
+            $cajero= new HomeController;
+            $a=$request->tipo;
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre);
+           
+        }
+
+        return  redirect('pasarela');
+        
+        
+    }
+
+    public function borrarad(Adeudo $adeudo){
+        if ($adeudo->delete()) {
+            $modelo=modelo::findOrFail($adeudo->modelo_id);
+            $cajero= new HomeController;
+            $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre);
+            session()->flash('borrado');
+
+        }
+        
+        
+        return  redirect('pasarela');
+
+    }
+
+    public function editad(Request $request ,Adeudo $adeudo){
+
+        $adeudo->monto=$adeudo->monto-$request->editarad;
+        $adeudo->save();
+        
+        $modelo=modelo::findOrFail($adeudo->modelo_id);
+        
+         // Registrando en caja
+         $cajero= new HomeController;
+         
+         $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre);
+        return  redirect('pasarela');
 
     }
 }

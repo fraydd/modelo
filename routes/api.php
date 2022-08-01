@@ -6,6 +6,7 @@ use App\Models\Eingreso;
 use App\Models\Ingreso;
 use App\Models\modelo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
@@ -78,14 +79,32 @@ Route::get('datatable3',function(){
 });
 
 Route::get('datatable4',function(){
+
     $modelos=modelo::all();
+    
+    
+    foreach ($modelos as $modelo ) {
+        $deudas=DB::table('adeudos')->where('modelo_id','=',$modelo->id)->get();
+        $d='';
+        foreach ($deudas as $deuda ) {
+            $d=$d.'; '.$deuda->tipo;
+            
+            
+        }
+        $d=substr($d, 2);
+        $modelo->deudas=$d;
+        
+        
+    }
+    
+    
 
     return datatables()
     ->of($modelos)
     
-    ->addColumn('btn','actionspasarela')
+    
     ->addColumn('imagen','foto')
-    ->rawColumns(['btn','imagen'])
+    ->rawColumns(['imagen'])
     ->toJson();
 });
 
@@ -140,5 +159,13 @@ Route::get('datatable6',function(){
 
     return datatables()
     ->of($colec)
+    ->toJson();
+});
+
+Route::get('pasarela',function(){
+    $pasarela=DB::table('tarifas')->where('tipo','=',"pasarela");
+
+    return datatables()
+    ->of($pasarela)
     ->toJson();
 });

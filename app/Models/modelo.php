@@ -72,4 +72,8 @@ class modelo extends Model
             public function rhs(){
                 return $this->belongsTo(rh::class);
                 }
+
+                public function adeudos(){
+                    return $this->hasOne(Adeudo::class,'adeudo_id');
+                }
 }

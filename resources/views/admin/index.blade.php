@@ -1,7 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .activ{
+        background-color:#ABEBC6;
+        text-align: center;
+        border: black;
+        border-radius: 20px;
+        color: black;
 
+    }
+    .caduc{
+        background-color:#E74C3C;
+        text-align: center;
+        border: black;
+        border-radius: 20px;
+        color: white;
+        
+    }
+</style>
 
 <div class="container">
 
@@ -35,7 +52,7 @@
     const link="{{url('api/datatable')}}"
     console.log(link);
     
-        $('#tabla').DataTable(
+        var tabla=$('#tabla').DataTable(
             {
                 "serverSide": true,
                 
@@ -43,7 +60,7 @@
 
                 "columnDefs": [
                  { 'searchable': false, 
-                    'targets': [0,4] }
+                    'targets': [0,6] }
                 ],
                 
                 "columns":[
@@ -73,9 +90,33 @@
                         'previous':'Anterior'
                     }
                 
-            }}
+            }
+        });
+
+             tabla.on("init",function(){
+            console.log('listo')
+            for (let j = 0; j < tabla.rows().count(); j++) {
+                 var cell=tabla.cell(j,4)
+                 var estado=cell.data();
+
+                 if (estado=='Activo') {
+                    
+                    $(cell.node()).text("")
+                    $(cell.node()).append("<p class='activ'>Activo</p>")
+                 }else{
+                    $(cell.node()).text("")
+                    $(cell.node()).append("<p class='caduc'>Caducado</p>")
+                 }
+                console.log(cell.node())
+            }
+           
             
-        );
+
+
+            
+        });
+       
+       
     
     </script>
 @endsection

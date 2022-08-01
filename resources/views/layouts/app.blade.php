@@ -15,6 +15,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}" ></script>
     <script src="{{ asset('js/chart.min.js') }}" ></script>
+    <script src="{{asset('js/jquery-validation@1.19.5.min.js')}}" ></script>
 
 
     <!-- Datatables -->
@@ -80,7 +81,7 @@
 
                         @can('modelos.create')
                         <li class="nav-item">
-                              <a class="nav-link" href={{route('modelos.pasarela')}}> Pasarela</a> 
+                              <a class="nav-link" href={{route('modelos.pasarela')}}> Servicios</a> 
                         </li>
                         @endcan
 
