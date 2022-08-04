@@ -417,7 +417,7 @@ pasarelafcn("#tabla tbody",table)
                             setTimeout(function(){
                                 window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
                                 console.log('reload')
-                            }, 3000);
+                            }, 4000);
                             }
                             
                             
@@ -443,7 +443,7 @@ pasarelafcn("#tabla tbody",table)
                                 setTimeout(function(){
                                     window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
                                     console.log('reload')
-                                }, 3000);
+                                }, 4000);
             
                             })
 
@@ -524,21 +524,21 @@ pasarelafcn("#tabla tbody",table)
             setTimeout(function(){
                                 window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
                                 console.log('reload')
-                            }, 3000);
+                            }, 4000);
             });
 
             $( "#guardar2" ).on( "click", function() {
             setTimeout(function(){
                                 window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
                                 console.log('reload')
-                            }, 3000);
+                            }, 4000);
             });
 
             $( "#guardar3" ).on( "click", function() {
             setTimeout(function(){
                                 window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
                                 console.log('reload')
-                            }, 3000);
+                            }, 4000);
             });
     
     </script>
