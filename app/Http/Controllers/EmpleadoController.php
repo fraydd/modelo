@@ -30,6 +30,9 @@ class EmpleadoController extends Controller
 
     public function store(Request $request)
     {
+        $reload= new HomeController;
+        $ejecutar=$reload->reload();
+        
         $cc=$request->all();
         $tarifas=Tarifa::all();
         
