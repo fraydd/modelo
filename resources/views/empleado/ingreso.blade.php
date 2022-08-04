@@ -129,6 +129,7 @@
                             
                                 
                             }
+                            console.log(a)
 
                             
 
@@ -138,13 +139,13 @@
                                 
                                 document.getElementById('estado').innerHTML ='Suscripción vigente hasta el: '+ fecha_v;
                                 if (c.length>=1) {
-                                    console.log(c.length,c)
+                                    
                                     for (let i = 0; i < c.length; i++) {
                                         var mas3=new Date(c[i]['mas3'])
                                         var now=Date.now();
-                                        console.log(now,mas3)
+                                        
                                         if (now>=mas3) {
-                                            console.log('niiii')
+                                            
                                             document.getElementById('a').innerHTML ='Pago de <b>'+c[i]['tipo']+'</b> retrasado';
                                             fondo.style.backgroundColor = '#ffeaec';
                                             const music = new Audio('sounds/access.mp3');
@@ -153,6 +154,29 @@
                                     }
                                     
                                 }
+
+                                if (a.length>=1) {
+                                    
+                                    for (let i = 0; i < a.length; i++) {
+                                        var fecha=new Date(a[i]['fecha_evento'])
+                                        var now=new Date(Date.now());
+                                        now.setHours(0)
+                                        now.setMinutes(0)
+                                        fecha.setHours(0)
+                                        fecha.setMinutes(0)
+                                        fecha.setDate(fecha.getDate()+2)
+                                        console.log(fecha,'a',now)
+                                        
+                                        if (fecha<now) {
+                                            document.getElementById('a').innerHTML ='Pago de <b>'+a[i]['tipo']+'</b> retrasado';
+                                            fondo.style.backgroundColor = '#ffeaec';
+                                            const music = new Audio('sounds/access.mp3');
+                                            music.play();
+                                        }
+                                    }
+                                    
+                                }
+
                                 if (c.length>=1 || b.length>=1  || a.length>=1 ) {
                                     var texto=''
                                     const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
@@ -160,8 +184,9 @@
                                     for (let j = 0; j < a.length; j++) {
                                         var tipo=a[j]['tipo']
                                         var valor= f.format(a[j]['monto'])
+                                        var fecha=a[j]['fecha_evento']
                                         texto+=tipo
-                                        texto+=' '+valor+'<br>'
+                                        texto+=' '+valor+'; &nbsp;<b>('+fecha+')</b><br>'
                                         
                                         
                                     }
@@ -176,12 +201,13 @@
                                     for (let j = 0; j < c.length; j++) {
                                         var tipo=c[j]['tipo']
                                         var valor= f.format(c[j]['monto'])
+                                        
                                         texto+=tipo
                                         texto+=' '+valor+'<br>'
                                         
                                         
                                     }
-                                    console.log(texto)
+                                   
 
                                     document.getElementById('b').innerHTML ='Pagos pendientes:<br>'+texto;
                                     
@@ -193,14 +219,35 @@
                                 const music = new Audio('sounds/access.mp3');
                                 music.play(); 
                                 if (c.length>=1) {
-                                    console.log(c.length,c)
+                                    
                                     for (let i = 0; i < c.length; i++) {
                                         var mas3=new Date(c[i]['mas3'])
                                         var now=Date.now();
-                                        console.log(now,mas3)
+                                       
                                         if (now>=mas3) {
-                                            console.log('niiii')
+                                           
                                             document.getElementById('a').innerHTML ='Pago de <b>'+c[i]['tipo']+'</b> retrasado';
+                                            fondo.style.backgroundColor = '#ffeaec';
+                                            const music = new Audio('sounds/access.mp3');
+                                            music.play();
+                                        }
+                                    }
+                                    
+                                }
+                                if (a.length>=1) {
+                                    
+                                    for (let i = 0; i < a.length; i++) {
+                                        var fecha=new Date(a[i]['fecha_evento'])
+                                        var now=new Date(Date.now());
+                                        now.setHours(0)
+                                        now.setMinutes(0)
+                                        fecha.setHours(0)
+                                        fecha.setMinutes(0)
+                                        fecha.setDate(fecha.getDate()+2)
+                                        console.log(fecha,'a',now)
+                                        
+                                        if (fecha<now) {
+                                            document.getElementById('a').innerHTML ='Pago de <b>'+a[i]['tipo']+'</b> retrasado';
                                             fondo.style.backgroundColor = '#ffeaec';
                                             const music = new Audio('sounds/access.mp3');
                                             music.play();
@@ -215,8 +262,9 @@
                                     for (let j = 0; j < a.length; j++) {
                                         var tipo=a[j]['tipo']
                                         var valor= f.format(a[j]['monto'])
+                                        var fecha=a[j]['fecha_evento']
                                         texto+=tipo
-                                        texto+=' '+valor+'<br>'
+                                        texto+=' '+valor+'; &nbsp;<b>('+fecha+')</b><br>'
                                         
                                         
                                     }
@@ -236,7 +284,7 @@
                                         
                                         
                                     }
-                                    console.log(texto)
+                                 
 
                                     document.getElementById('b').innerHTML ='Pagos pendientes:<br>'+texto;
                                     
@@ -247,7 +295,7 @@
                             setTimeout(function(){
                                
                                 $(".des").fadeOut(100);
-                            },4000);  
+                            },5000);  
                         })
                         
                         

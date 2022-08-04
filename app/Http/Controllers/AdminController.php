@@ -19,23 +19,11 @@ class AdminController extends Controller
     }
 
     public function tarifa(){
-
-        
-       
-
+      
         $anterior = Tarifa::all();
-        
-        
         $mes=$anterior['0']->valor;
-        
-        
-        
         $mes=json_encode($mes);
-       
-        
-        
         return view('admin.tarifa')
- 
         ->with('mes', $mes);
     }
 
@@ -70,32 +58,23 @@ class AdminController extends Controller
         $pasarela = new tarifa($pasarela);
         $pasarela->save();
 
-        $anterior = Tarifa::all();
-        $mes=$anterior['0']->valor;
-        $mes=json_encode($mes);
 
 
 
 
-        return view('admin.tarifa')
-        ->with('mes', $mes);
+        return redirect('tarifa');
         
     }
     public function borrarp(Tarifa $tarifa){
-        if ($tarifa->delete()) {
-            $anterior = Tarifa::all();
-        $mes=$anterior['0']->valor;
-        $mes=json_encode($mes);
-
-
-
-       
-        return view('admin.tarifa')
-        ->with('mes', $mes);
-        }
+        
+        $tarifa->delete();
+        return redirect('tarifa');
+        
         
         
     }
+
+   
 
     public function index()
     {

@@ -167,5 +167,7 @@ Route::get('pasarela',function(){
 
     return datatables()
     ->of($pasarela)
+    ->addColumn('btn','actionborrarp')
+    ->rawColumns(['btn'])
     ->toJson();
 });

@@ -12,5 +12,6 @@ class Tarifa extends Model
     'tarifaMes',
 'tipo',
 'nombre',
-'valor'];
+'valor',
+'fecha'];
 }

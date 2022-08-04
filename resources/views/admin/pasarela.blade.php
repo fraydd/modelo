@@ -85,7 +85,7 @@ input.error {
                     
                 </div>
 
-                <small style="color:orange ;">Si deja desmarcada la casilla "¿Abonar una parte?", se registrara el pago de la totalidad del monto</small>
+                <small style="color:orange ;">Si deja desmarcada la casilla "¿Abonar una parte?", se registrara el pago de la totalidad del monto.</small>
 
                 <div class="form-check mb-3">
                     <input id="pago" class="form-check-input" type="checkbox" name="pago" value="true">
@@ -102,7 +102,7 @@ input.error {
             
                 </div><br>
 
-                <button type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro: registrar venta de uniforme?')">Guardar</button>
+                <button id="guardar1" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro: registrar venta de uniforme?')">Guardar</button>
             </form>
             </div>
 
@@ -130,7 +130,7 @@ input.error {
                     <select class="form-select"  name="pasarela"  id="pasarela" aria-placeholder="pais" required>
                         <option value="">- Seleccione -</option>
                         @foreach($pasarelas as $pasarela)
-                            <option value="{{ $pasarela['id'] }}">  {{ $pasarela['nombre'] }}, $ {{$pasarela['valor']}} </option>
+                            <option value="{{ $pasarela['id'] }}">  <b>{{ $pasarela['nombre'] }};</b>&nbsp; $ {{$pasarela['valor']}}; &nbsp;  {{$pasarela['fecha']}}</option>
                         @endforeach
                     </select>
 
@@ -152,7 +152,7 @@ input.error {
             
                 </div><br>
 
-                <button type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
+                <button id="guardar2" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
             </form>
 
 
@@ -217,7 +217,7 @@ input.error {
             </div><br>
           
 
-                <button id="submitad" type="submit" class="float-end btn btn-primary" >Guardar</button>
+                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
             </form>
 
 
@@ -396,7 +396,7 @@ pasarelafcn("#tabla tbody",table)
                 '<td hidden>'+adeudosm[i].id+'</td>'+
                 '<td>'+adeudosm[i].tipo+'</td>'+
                 '<td>'+f.format( adeudosm[i].monto)+'</td>'+
-                '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm">borrar</button>'+'</td>'+
+                '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm" >borrar</button>'+'</td>'+
                 '<td>'+'<button id="editar'+adeudosm[i].id+'" class="btn btn-outline-warning  btn-sm" data-bs-toggle="modal" data-bs-target="#editar" >Editar</button>'+'</td>'+
                 
                 '</tr>';
@@ -406,12 +406,20 @@ pasarelafcn("#tabla tbody",table)
                 var id='a'
                     $(document).on('click', 'button', function() {
                         if (this.id.slice(0,6)=='borrar') {
-                            let idb = this.id;
+                            if (confirm('seguro?')==true) {
+                                let idb = this.id;
                             var id=idb.slice(6);
                             var url="{{route('modelos.borrarad', 1)}}";
                             url = url.replace('1', id);
                             console.log(url)
                             window.location.href = url;
+
+                            setTimeout(function(){
+                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
+                                console.log('reload')
+                            }, 3000);
+                            }
+                            
                             
 
                             
@@ -432,6 +440,11 @@ pasarelafcn("#tabla tbody",table)
                             $('#formad').attr('action',url);
                             $('#submitad').on('click',function(){
                                 
+                                setTimeout(function(){
+                                    window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
+                                    console.log('reload')
+                                }, 3000);
+            
                             })
 
                             $("#formad").validate({
@@ -506,6 +519,27 @@ pasarelafcn("#tabla tbody",table)
                
                             })
         }
+
+        $( "#guardar1" ).on( "click", function() {
+            setTimeout(function(){
+                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
+                                console.log('reload')
+                            }, 3000);
+            });
+
+            $( "#guardar2" ).on( "click", function() {
+            setTimeout(function(){
+                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
+                                console.log('reload')
+                            }, 3000);
+            });
+
+            $( "#guardar3" ).on( "click", function() {
+            setTimeout(function(){
+                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
+                                console.log('reload')
+                            }, 3000);
+            });
     
     </script>
 

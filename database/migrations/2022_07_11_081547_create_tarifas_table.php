@@ -18,6 +18,7 @@ class CreateTarifasTable extends Migration
             $table->string('tipo');
             $table->string('nombre');
             $table->unsignedBigInteger('valor');
+            $table->date('fecha');
 
 
             $table->timestamps();

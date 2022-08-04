@@ -47,6 +47,8 @@ input.error {
 
                     <input class="form-control" min="0" type="number" name="meses_pagados" id="meses_pagados" autocomplete="off">
                     <br>
+                <small style="color:orange ;">Si deja desmarcada la casilla "¿Abonar una parte?", se registrara el pago de la totalidad del monto.</small>
+
                     <div class="form-check ">
                         <input id="pago" class="form-check-input" type="checkbox"  name="pago" value="false">
                         <label for="pago" class="form-check-label">¿Abonar una parte?</label>

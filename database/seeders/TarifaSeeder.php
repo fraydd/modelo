@@ -18,6 +18,7 @@ class TarifaSeeder extends Seeder
             'tipo'=>'Mensualidad',
             'nombre'=>'Mensualidad',
             'valor'=>0,
+            'fecha'=>'2022-01-01'
             
 
         ]);

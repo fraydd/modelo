@@ -180,17 +180,10 @@ class ModeloController extends Controller
             $modelo->tipo=$tipo;
             $modelo->total=$request->abona;
             $modelo->importe= $request->abona;
+            $modelo->saldo=$valor*intval($modelo->meses_pagados)-$request->abona;
 
         }
         
-
-
-
-        
-
-
-
-
 
         // PDF
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
@@ -423,7 +416,7 @@ class ModeloController extends Controller
 
             $adeudo=new Adeudo();
             $adeudo->tipo='Mensualidad';
-            $adeudo->monto= intval( $tarifa->valor)-intval($request->abona);
+            $adeudo->monto= intval( $tarifa->valor)*$mes-intval($request->abona);
             $adeudo->modelo_id=$modelo->id;
             $adeudo->save();
 
@@ -440,6 +433,7 @@ class ModeloController extends Controller
             $modelo->tipo=$tipo;
             $modelo->total=$request->abona;
             $modelo->importe=$request->abona;
+            $modelo->saldo=$valor*$mes-$request->abona;
         }
 
         
@@ -745,6 +739,14 @@ class ModeloController extends Controller
     }
     public function pasarelaput(Request $request , modelo $modelo){
         $consepto =Tarifa::findOrFail($request->pasarela);
+
+        /* Datos generales para pdf */
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $modelo->fechafac=$fechafac->format('Y-m-d');
+        $modelo->valor=Tarifa::find($request->pasarela)->valor;
+        $modelo->cantidad=1;
+
+
         if (empty($request->pago2)) {
             /* paga todo */
             
@@ -752,6 +754,16 @@ class ModeloController extends Controller
             $cajero= new HomeController;
             $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre);
             
+            /* Datos particulares para pdf */
+            $modelo->tipo=Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
+            $modelo->total=$modelo->valor;
+            $modelo->importe=$modelo->valor;
+
+            // PDF
+            $modelo->saldo=0;
+            $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+            return $pdf->download('pago.pdf');
+
         }else{
             /* Abona */
 
@@ -765,17 +777,44 @@ class ModeloController extends Controller
             $cajero= new HomeController;
             $a=$consepto->tipo.' '.$consepto->nombre;
             $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre);
+
+            /* Datos particulares para pdf */
+            $modelo->tipo='Abono '.Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
+            $modelo->total=$request->abona2;
+            $modelo->importe=$request->abona2;
+
+            // PDF
+            $modelo->saldo=$modelo->valor-$request->abona2;
+            $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+            return $pdf->download('pago.pdf');
            
         }
-        return  redirect('pasarela');
 
     }
     public function uniformeput(Request $request , modelo $modelo){
+        /* Datos generales para pdf */
+        
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $modelo->fechafac=$fechafac->format('Y-m-d');
+        $modelo->valor=$request->precio;
+        $modelo->cantidad=1;
+        
+
         if (empty($request->pago)) {
             /* paga todo */
             $cajero= new HomeController;
             
             $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre);
+
+            /* Datos particulares para pdf */
+            $modelo->tipo=$request->tipo;
+            $modelo->total=$modelo->valor;
+            $modelo->importe=$modelo->valor;
+
+            // PDF
+            $modelo->saldo=0;
+            $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+            return $pdf->download('pago.pdf');
         }else{
             $adeudo=new Adeudo();
             $adeudo->tipo=$request->tipo;
@@ -787,32 +826,63 @@ class ModeloController extends Controller
             $cajero= new HomeController;
             $a=$request->tipo;
             $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre);
+
+            /* Datos particulares para pdf */
+            $modelo->tipo='Abono '.$request->tipo;
+            $modelo->total=$request->abona;
+            $modelo->importe=$request->abona;
+
+            // PDF
+            $modelo->saldo=$modelo->valor-$request->abona;
+            $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+            return $pdf->download('pago.pdf');
            
         }
 
-        return  redirect('pasarela');
+       
         
         
     }
 
     public function borrarad(Adeudo $adeudo){
+        
         if ($adeudo->delete()) {
+
             $modelo=modelo::findOrFail($adeudo->modelo_id);
+
+            /* Datos generales para pdf */
+        
+            $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+            $modelo->fechafac=$fechafac->format('Y-m-d');
+            $modelo->valor='NA';
+            $modelo->cantidad=1;
+
             $cajero= new HomeController;
             $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre);
+
+            /* Datos particulares para pdf */
+            $modelo->tipo='Abono '.$adeudo->tipo;
+            $modelo->total=$adeudo->monto;
+            $modelo->importe=$adeudo->monto;
+
+            // PDF
+            $modelo->saldo=0;
+            
+
             session()->flash('borrado');
 
         }
+        $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+        return $pdf->download('pago.pdf');
         
         
-        return  redirect('pasarela');
 
     }
 
     public function editad(Request $request ,Adeudo $adeudo){
+        
 
-        $adeudo->monto=$adeudo->monto-$request->editarad;
-        $adeudo->save();
+        
         
         $modelo=modelo::findOrFail($adeudo->modelo_id);
         
@@ -820,7 +890,27 @@ class ModeloController extends Controller
          $cajero= new HomeController;
          
          $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre);
-        return  redirect('pasarela');
+        
+
+        /* Datos generales para pdf */
+        
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+        $modelo->fechafac=$fechafac->format('Y-m-d');
+        $modelo->valor='NA';
+        $modelo->cantidad=1;
+
+         /* Datos particulares para pdf */
+         $modelo->tipo='Abono '.$adeudo->tipo;
+         $modelo->total=$request->editarad;
+         $modelo->importe=$request->editarad;
+
+         // PDF
+         $modelo->saldo=$adeudo->monto-$request->editarad;
+
+         $adeudo->monto=$adeudo->monto-$request->editarad;
+        $adeudo->save();
+         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+        return $pdf->download('pago.pdf');
 
     }
 }

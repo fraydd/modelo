@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\modelo;
 use App\Models\Caja;
 use App\Models\Tarifa;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -70,5 +71,7 @@ class HomeController extends Controller
         $caja->save();
         
     }
+
+  
     
 }

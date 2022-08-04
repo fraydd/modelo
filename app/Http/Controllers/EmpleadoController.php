@@ -8,6 +8,7 @@ use App\Models\identification;
 use App\Models\modelo;
 use App\Models\rh;
 use App\Models\sex;
+use App\Models\Tarifa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,8 @@ class EmpleadoController extends Controller
     public function store(Request $request)
     {
         $cc=$request->all();
+        $tarifas=Tarifa::all();
+        
        
 
         //
@@ -56,6 +59,18 @@ class EmpleadoController extends Controller
         $adeudos=DB::table('adeudos')->where('modelo_id','=',$idmodelo)->get();
 
         foreach ($adeudos as $adeudo ) {
+            $aux= substr($adeudo->tipo,0,8); 
+            
+            if($aux=="pasarela"){
+                $nombre=substr($adeudo->tipo,9);
+                
+                $fecha=DB::table('tarifas')->where('nombre','=',$nombre)->get()->toArray();
+                $adeudo->fecha_evento=strval($fecha["0"]->fecha);
+                
+                
+            }
+            
+            
             $mas3= new Carbon(strval( $adeudo->created_at));
             $mas3=$mas3->addMonths(3);
             $mas3=$mas3->format('Y-m-d H:i:s');

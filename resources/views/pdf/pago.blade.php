@@ -52,15 +52,16 @@
 
 </style>
 
-</div><div id="app" class="col-11">
-<table>
-    <tr>
-        <td><img style="width:100px ; height:100px;" src="{{ asset('images/logo.jpeg')}}" /></td>
-        <td>&nbsp; &nbsp;</td>
-        
-        <td><h3 class="lucida" >Carlos Mario Miranda</h3></td>
-    </tr>
-</table>
+
+<div id="app" class="col-11" style="padding: 70px 50px 70px;">
+  <table>
+      <tr>
+          <td><img style="width:100px ; height:100px;" src="{{ asset('images/logo.jpeg')}}" /></td>
+          <td>&nbsp; &nbsp;</td>
+          
+          <td><h3 class="lucida" >Carlos Mario Miranda</h3></td>
+      </tr>
+  </table>
     
 
     <div class="row">
@@ -74,7 +75,7 @@
       </div>
       
     </div>
-  
+  <h3 style="text-align:center ;" >Recibo de pago</h3>
     <hr />
   
     <div class="row fact-info mt-3">
@@ -91,6 +92,10 @@
                 <td><b>Fecha:</b></td>
                 <td>{{$modelo->fechafac}}</td>
             </tr>
+
+
+            
+
         </table>
   
     <div class="row my-5">
@@ -98,17 +103,17 @@
         <thead>
           <tr>
             <th>Cant.</th>
-            <th>Descripcion</th>
+            <th>Descripción</th>
             <th>Precio Unitario</th>
-            <th>Importe</th>
+            <th>Monto pagado</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>{{$modelo->cantidad}}</td>
             <td>{{$modelo->tipo}}</td>
-            <td>{{$modelo->valor}}</td>
-            <td>{{$modelo->importe}}</td>
+            <td>$ {{$modelo->valor}}</td>
+            <td>$ {{$modelo->importe}}</td>
           </tr>
 
         </tbody>
@@ -117,14 +122,16 @@
           <tr>
             <th></th>
             <th></th>
-            <th>Total</th>
-            <th>{{$modelo->total}}</th>
+            <th>Total pagado</th>
+            <th>$ {{$modelo->total}}</th>
           </tr>
         </tfoot>
       </table>
     </div>
+    <p>Saldo por pagar: $ {{$modelo->saldo}}</p>
   
    
+</div>
 </div>
 
 <script>
