@@ -40,6 +40,27 @@
     .fil{
         display: block;
     }
+    .ini{
+        color:white ;
+         font-family: Lucida Sans Unicode;
+          font-size:medium; 
+          background: rgba(0,0,0,.4); 
+          border-radius:20px; 
+          padding:1px 10px 1px 10px;
+    }
+    .ini:hover{
+        background: rgba(0,0,0,.5);
+        color:white;
+        
+    }
+    body::-webkit-scrollbar{
+        width: 7px;
+        background: black;
+    }
+    body::-webkit-scrollbar-thumb{
+        background:#5ebef6 ;
+        border-radius: 10px;
+    }
     
 </style>
 
@@ -48,82 +69,71 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
-    <body class="antialiased">
-        <div style=" background-color: #5e5e5e; border: solid;" class="relative flex items-top justify-center min-h-screen sm-gray-100 dark:sm-gray-900 sm:items-center py-4 sm:pt-0">
+    <body>
+    
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
-                        <a href="{{ url('/home') }}" class="text-sm dark:text-gray-500 underline" style="color:white ;">Home</a>
+                        <a href="{{ url('/home') }}" class="ini text-sm dark:text-gray-500 underline" >Home</a>
                     @else
-                        <a href="{{ route('login') }}" class="text-sm  dark:text-gray-500 underline" style="color:white ;" >Iniciar sesión</a>
+                        <a href="{{ route('login') }}" class="ini text-sm  dark:text-gray-500 "  >Iniciar sesión</a>
 
                         
                     @endauth
                 </div>
             @endif
 
+                <div class="position-relative" style="border:solid ;">
+                    <div class="fixed top-50 start-50 translate-middle mt-1 bi bi-caret-down-fill">
+                        <img id="4" class="im"  src="{{asset('images/cmm.png')}}" >
+                    </div>
+                </div>
             
+
+
                 
-            <div class="container d-flex justify-content-evenly" >
-<div class="col " >
-    <div class="row d-flex justify-content-evenly" >
-
-        </div><div class="row d-flex justify-content-evenly">
-            <img id="4" class="im"  src="{{asset('images/l.png')}}" >
-        </div><div class="row d-flex justify-content-evenly">
-
-
-
-        </div>
-
-
-
-</div></div>
-    
-
-
-</div>
+            <!-- Photo Grid -->
+            <div class="w3-row" id="myGrid" style="margin-bottom:128px">
+            <div class="w3-third">
+                <img src="{{asset('images/1.jpg')}}" style="width:100%">
+                <img src="{{asset('images/2.jpg')}}" style="width:100%">
+                <img src="{{asset('images/3.jpg')}}" style="width:100%">
+                <img src="{{asset('images/4.jpg')}}" style="width:100%">
+                <img src="{{asset('images/5.jpg')}}" style="width:100%">
+                <img src="{{asset('images/6.jpg')}}" style="width:100%">
             </div>
-       
+
+            <div class="w3-third">
+                <img src="{{asset('images/12.jpg')}}" style="width:100%">
+                <img src="{{asset('images/9.jpg')}}" style="width:100%">
+                <img src="{{asset('images/7.jpg')}}" style="width:100%">
+                <img src="{{asset('images/8.jpg')}}" style="width:100%">
+                <img src="{{asset('images/11.jpg')}}" style="width:100%">
+                <img src="{{asset('images/10.jpg')}}" style="width:100%">
+            </div>
+
+            <div class="w3-third">
+                <img src="{{asset('images/14.jpg')}}" style="width:100%">
+                <img src="{{asset('images/15.jpg')}}" style="width:100%">
+                <img src="{{asset('images/16.jpg')}}" style="width:100%">
+                <img src="{{asset('images/13.jpg')}}" style="width:100%">
+                <img src="{{asset('images/1.jpg')}}" style="width:100%">
+                <img src="{{asset('images/8.jpg')}}" style="width:100%">
+            </div>
+                </div>
 
         <script>
-    $(document).ready(function(){
-        console.log(11)
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min) + min);
-        }
-        var im=getRandomInt(1, 9);
-        var is=getRandomInt(1, 9);
-        var image = document.getElementById(im);
-        var image2 = document.getElementById(is);
-        
-        var w=image.width;
-        var h=image.height;
-        console.log(w,h,image.width,image.height)
-
-
-        var w2=image2.width;
-        var h2=image2.height;
-
-        $("#"+is).animate({
-            width:w2+'px',
-            height:h2+'px'
+            $(document).ready(function(){
+                console.log('listo')
+            $(window).animate({scrollTop: 2000},5000); 
+            });
+        </script>
             
-
-        },1000);
-
-        $("#"+im).animate({
-            width:w+'px',
-            height:h+'px'
-            
-
-            })
-        
-    });
-</script>
+      
 
     </body>
 </html>

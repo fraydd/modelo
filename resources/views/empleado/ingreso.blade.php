@@ -68,7 +68,7 @@
                 <div class=" card-body">
                     <h1>Bienvenido {{$data=json_decode(session('data'))}}!</h1><br>
                     <div class=" d-flex justify-content-center">
-                        <img class="d-flex justify-content-center imagen" src="{{ asset('images/modelos/'.json_decode(session('foto'))) }}"  >
+                        <img class="d-flex justify-content-center imagen" src="{{ asset(json_decode(session('foto'))) }}"  >
                     </div>
                     <br>
                     <h5 id="estado"></h5> 

@@ -9,8 +9,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
     *{
         box-sizing: border-box;
@@ -32,67 +33,47 @@
     .fil{
         display: block;
     }
+    body::-webkit-scrollbar{
+        width: 7px;
+        background: black;
+    }
+    body::-webkit-scrollbar-thumb{
+        background:#5ebef6 ;
+        border-radius: 10px;
+    }
     
 </style>
-<div class="container d-flex justify-content-evenly" >
-<div class="col " >
-    <div class="row d-flex justify-content-evenly" >
-        <img id="1" class="im" src="{{asset('images/1.jpg')}}" >
-        <img id="2" class="im"  src="{{asset('images/2.jpg')}}" >
-        <img id="3" class="im" src="{{asset('images/3.jpg')}}" >
-        <img id="4" class="im"  src="{{asset('images/4.jpg')}}" >
-        
-        </div><div class="row d-flex justify-content-evenly">
-    <img id="5" class="im" src="{{asset('images/5.jpg')}}" >
-        <img id="6" class="im"  src="{{asset('images/6.jpg')}}" >
-        <img id="7" class="im" src="{{asset('images/7.jpg')}}" >
-        <img id="8" class="im" src="{{asset('images/8.jpg')}}" >
-        <img id="9" class="im" src="{{asset('images/9.jpg')}}" >
-
+</head>
+<body>
+    <!-- Photo Grid -->
+    <div class="w3-row" id="myGrid" style="margin-bottom:128px">
+        <div class="w3-third" id="0">
         </div>
 
+        <div class="w3-third" id="1">
+        </div>
 
+        <div class="w3-third" id="2">
 
-</div></div>
-    
-
-
-
+        </div>
+    </div>
 <script>
     $(document).ready(function(){
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min) + min);
+        
+        
+        const data = JSON.parse(`<?php echo $data; ?>`)
+        console.log(data.fotos)
+        for (let i = 0; i < data.fotos.length; i++) {
+            console.log(data.fotos[i])
+            let j=i%3;
+            $( "#"+j ).append( '<img src="'+data.fotos[i]+'" style="width:100%">' );
+            
+            
         }
-        var im=getRandomInt(1, 10);
-        var is=getRandomInt(1, 10);
-        var image = document.getElementById(im);
-        var image2 = document.getElementById(is);
-        
-        var w=image.width-1;
-        var h=image.height-1;
-
-
-        var w2=image2.width-1;
-        var h2=image2.height-1;
-
-        $("#"+is).animate({
-            width:w+'px',
-            height:h+'px'
-            
-
-        },1000);
-
-        $("#"+im).animate({
-            width:w+'px',
-            height:h+'px'
-            
-
-            })
-        
+    
     });
 </script>
+
 </body>
 </html>
 

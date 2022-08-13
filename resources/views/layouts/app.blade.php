@@ -78,6 +78,11 @@
                               <a class="nav-link" href={{route('modelos.tarifa')}}> Tarifas</a> 
                         </li>
                         @endcan
+                        @can('root')
+                        <li class="nav-item">
+                              <a class="nav-link" href={{route('admin.caja')}}> Caja</a> 
+                        </li>
+                        @endcan
 
                         @can('modelos.create')
                         <li class="nav-item">

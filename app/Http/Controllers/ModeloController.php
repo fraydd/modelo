@@ -117,7 +117,8 @@ class ModeloController extends Controller
 
         if($foto=$request->file('foto')){
             $rutaGimg='images/modelos';
-            $imgP=date('YmdHis').".".$foto->getClientOriginalExtension();
+            $imgP='images/modelos/'.date('YmdHis').".".$foto->getClientOriginalExtension();
+           
             $foto->move($rutaGimg, $imgP);
             $modelo['foto']="$imgP";
         }
@@ -222,6 +223,7 @@ class ModeloController extends Controller
         ->with('facebook',$facebook);
     }
     public function edit(modelo $modelo){
+        
         $sexes=sex::all();
         $identifications=identification::all();
         $rhs=rh::all();
@@ -264,11 +266,13 @@ class ModeloController extends Controller
 
             
         ]);
+        
 
         if (!empty( $request->file('foto'))) {
+                unlink($modelo->foto);
                 if($foto=$request->file('foto')){
                 $rutaGimg='images/modelos';
-                $imgP=date('YmdHis').".".$foto->getClientOriginalExtension();
+                $imgP='images/modelos/'.date('YmdHis').".".$foto->getClientOriginalExtension();
                 $foto->move($rutaGimg, $imgP);
                 $request->foto="$imgP";
                 $modelo->foto=$request->foto;
@@ -505,7 +509,7 @@ class ModeloController extends Controller
 
     public function borrar(modelo $modelo)
     {
-
+        unlink($modelo->foto);
         $modelo->delete();
 
         $modelos=modelo::all();
@@ -519,10 +523,12 @@ class ModeloController extends Controller
 
     public function caja(){
         
+        
         return view('admin.caja');
     }
 
     public function cajapost(Request $request){
+        
         $modelo=new modelo();
         $modelo->nombre=$request->paga;
         $modelo->correo=$request->paga;
@@ -547,6 +553,17 @@ class ModeloController extends Controller
          return $pdf->download('pago.pdf');
 
         
+    }
+    public function cajapostegreso(Request $request){
+        $caja['estado']=0;
+        $caja['concepto']=$request->concepto;
+        $caja['valor']=$request->valor;
+        $caja['paga']=Auth::user()->name;
+        $caja['recibe']=$request->paga;
+        
+        $caja=new Caja($caja);
+        $caja->save();
+        return view('admin.caja');
     }
 
 
@@ -662,27 +679,58 @@ class ModeloController extends Controller
         
         foreach ($cajas as $caja ) {
             $data['fecha'][]=substr( $caja->created_at->toDateString(),0,-3);
+            
 
         }
+        
         $fechas=array_values(array_unique($data['fecha']));
+        
         for ($i=0; $i < count($fechas); $i++) {
              $mes=intval( substr($fechas[$i],5));
              $anio=intval( substr($fechas[$i],0,4));
              
             $fil = caja::whereYear('created_at', '=', $anio)->whereMonth('created_at', '=', $mes)->get();
-            $valor[$i]=0;
+            $valori[$i]=0;
+            $valoro[$i]=0;
+
             foreach ($fil as $fi ) {
-                $aux=$fi->valor;
-                $valor[$i]=$valor[$i]+$aux;
+                if ($fi->estado==1) {
+                    
+                    $aux=$fi->valor;
+                    $valori[$i]=$valori[$i]+$aux;
+                    
+                }
+                if ($fi->estado==0) {
+                    
+                    $aux=$fi->valor;
+                    $valoro[$i]=$valoro[$i]+$aux;
+                }
                 
             }
+
+
+            /*if ($fil->estado==1) {
+                $valori[$i]=0;
+                foreach ($fil as $fi ) {
+                    $aux=$fi->valor;
+                    $valori[$i]=$valori[$i]+$aux;
+                    
+                } 
+            } 
+            */
+
+           
+            
+            
             
            
            
         }
+       
+
         $data['fecha']=$fechas;
-        $data['valores']=$valor;
-        
+        $data['valori']=$valori;
+        $data['valoro']=$valoro;
         
         
         $empleados=Admin::all();

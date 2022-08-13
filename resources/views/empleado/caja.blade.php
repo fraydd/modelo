@@ -7,6 +7,33 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
+            @if(session('borrado'))
+                    <div class="alert alert-success" role="alert">
+                        Registro borrado correctamente!
+                    </div>
+                    <script>
+                        setTimeout(function(){
+                    
+                            $(".alert").fadeOut(100);
+                            
+                        },3000);
+                        
+                    </script>
+                @endif
+
+                @if(session('noborrado'))
+                    <div class="alert alert-danger" role="alert">
+                        Error al borrar registro!
+                    </div>
+                    <script>
+                        setTimeout(function(){
+                    
+                            $(".alert").fadeOut(100);
+                            
+                        },3000);
+                        
+                    </script>
+                @endif
                 <div class="card-header"><h5>Caja</h5></div>
 
                 <div class="card-body">
@@ -115,6 +142,7 @@
                                 <th>Recibe</th>
                                 <th >Valor</th>
                                 <th >Timestamp</th>
+                                <th >&nbsp;</th>
                                 
                                 
                             </tr> 
@@ -148,9 +176,7 @@ $(document).ready( function () {
                 if(data['estado']==1){
                     
                     $('td:eq(3)', row).html( '<p style="border-radius:30px; background-color: #A9FFC9; text-align:center;">$ '+A+'</p>' );
-                    /* $('td:eq(3)', row).css('background-color', '#FFA9A9');
-                    $('td:eq(3)', row).css('border-radius', '30px');
-                    $('td:eq(3)', row).css('text-align', 'center'); */
+  
                     
                     
                 }else{
@@ -163,7 +189,7 @@ $(document).ready( function () {
                 "ordering": true,
                 "order": [[ 4, 'des' ]],
                 
-                "ajax":"{{url('api/datatable3')}}",
+                "ajax":"{{url('api/cajaroot')}}",
                
                 "columns":[
                     {data:'concepto'},
@@ -171,6 +197,8 @@ $(document).ready( function () {
                     {data:'recibe'},
                     {data:'valor'},
                     {data:'created_at'},
+                    {data:'btn',className: "text-center"},
+                    
                     
 
               ],

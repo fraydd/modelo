@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Caja;
 use App\Models\Eingreso;
 use App\Models\Ingreso;
 use App\Models\modelo;
@@ -14,7 +15,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:root')->only('create','index','tarifa','ingresos');
+        $this->middleware('can:root')->only('create','index','tarifa','ingresos','caja');
 
     }
 
@@ -25,6 +26,9 @@ class AdminController extends Controller
         $mes=json_encode($mes);
         return view('admin.tarifa')
         ->with('mes', $mes);
+    }
+    public function caja(){
+        return view('empleado.caja');
     }
 
     public function tarifaMes(Request $request){
@@ -73,7 +77,20 @@ class AdminController extends Controller
         
         
     }
+    public function borrarc(Caja $caja){
+        if ($caja->delete()) {
+            session()->flash('borrado');
+            return redirect('cajaroot');
 
+        }else{
+            session()->flash('noborrado');
+        }
+        
+        
+        
+        
+        
+    }
    
 
     public function index()

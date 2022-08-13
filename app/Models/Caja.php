@@ -14,7 +14,8 @@ class Caja extends Model
         'paga',
         'recibe',
         'concepto',
-        'valor'];
+        'valor',
+    'estado'];
         
         protected function serializeDate(DateTimeInterface $date)
         {

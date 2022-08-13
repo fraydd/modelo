@@ -30,9 +30,21 @@ class HomeController extends Controller
      */
     public function index()
     {
+      
+        $modelos=modelo::all();
+        $i=0;
+        foreach ($modelos as $modelo ) {
+            
+            $fotos[$i]=$modelo->foto;
+            $i++;
+        }
+        $data['fotos']=$fotos;
+        $data=json_encode($data);
+        //dd($data);
+
        $reload= new HomeController;
        $ejecutar=$reload->reload();
-        return view('home');
+        return view('home')->with('data',$data);
     }
     public function reload(){
         
@@ -61,7 +73,7 @@ class HomeController extends Controller
     }
 
     public function cajero( $concepto,  $valor,  $paga ){
-        
+        $caja['estado']=1;
         $caja['concepto']=$concepto;
         $caja['valor']=$valor;
         $caja['paga']=$paga;

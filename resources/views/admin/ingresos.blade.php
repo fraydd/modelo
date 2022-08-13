@@ -18,7 +18,7 @@
     <table class="table table-strped  table-hover shadow-sm " id="tabla">
                         <thead>
                             <tr>
-                                <th>Foto</th>
+                                <th>Nombre</th>
                                 <th>Timestamp</th>
                             </tr> 
                         </thead>

@@ -41,6 +41,8 @@ Route::put('modelos/editad/{adeudo}', [App\Http\Controllers\ModeloController::cl
 Route::get('pasarela',[App\Http\Controllers\ModeloController::class, 'pasarela'])->name('modelos.pasarela');
 Route::get('caja',[App\Http\Controllers\ModeloController::class, 'caja'])->name('modelos.caja');
 Route::post('caja', [App\Http\Controllers\ModeloController::class, 'cajapost'])->name('modelos.cajapost');
+Route::post('cajaegreso', [App\Http\Controllers\ModeloController::class, 'cajapostegreso'])->name('modelos.cajapostegreso');
+
 Route::get('estadisticas',[App\Http\Controllers\ModeloController::class, 'estadisticas'])->name('modelos.estadisticas');
 Route::put('update/{usuario}',[App\Http\Controllers\ModeloController::class, 'update'])->name('update');
 Route::put('modelos/deuda/{modelo}', 'App\Http\Controllers\ModeloController@deudaput')->name('modelos.deudaput');
@@ -50,6 +52,8 @@ Route::get('tarifa', 'App\Http\Controllers\AdminController@tarifa')->name('model
 Route::post('tarifaMes', 'App\Http\Controllers\AdminController@tarifaMes')->name('modelos.tarifaMes');
 Route::post('tarifaP', 'App\Http\Controllers\AdminController@tarifaP')->name('modelos.tarifaP');
 Route::get('admin/{tarifa}/borrarp',[App\Http\Controllers\AdminController::class, 'borrarp'])->name('admin.borrarp');
+Route::get('cajaroot',[App\Http\Controllers\AdminController::class, 'caja'])->name('admin.caja');
+Route::get('admin/{caja}/borrarc',[App\Http\Controllers\AdminController::class, 'borrarc'])->name('admin.borrarc');
 
 
 Route::resource('admin',AdminController::class);

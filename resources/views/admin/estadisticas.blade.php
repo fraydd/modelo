@@ -39,7 +39,7 @@
                             <tr>
                                 <td>Promedio de cintura</td>
                                 <td>{{$promci}} &nbsp; cm</td>
-                            </tr>}
+                            </tr>
                             <tr>
                                 <td>Promedio de cadera</td>
                                 <td>{{$promca}} &nbsp; cm</td>
@@ -49,6 +49,9 @@
                     
             </div>
             <br>
+            <div >
+                <canvas id="chart-ingresos" width="15" height="6"></canvas>
+            </div><br>
             
             <canvas id="chart-edades" width="15" height="5"></canvas>
             <br>
@@ -59,9 +62,7 @@
                                 <canvas id="chart-sex" width="15" height="6"></canvas>
                             </div>
             </div><br>
-            <div >
-                <canvas id="chart-ingresos" width="15" height="6"></canvas>
-            </div>
+           
             
 
             
@@ -236,7 +237,7 @@
                         
                         title:{
                             display: true,
-                            text:'Distribucion porcentual por sexo'
+                            text:'Distribución porcentual por sexo'
                         },
                     },
                         
@@ -250,16 +251,33 @@
 
             });
 
-
+            console.log(data.valori,data.valoro)
             const oyx=document.getElementById('chart-ingresos').getContext('2d');
             const ingresosGraph =new Chart(oyx,{
                 type: 'line',
                 data: {
                             labels: data.fecha,
                             datasets: [{
-                            label: '#',
+                            label: 'Ingresos',
                             
-                            data: data.valores,
+                            data: data.valori,
+                            backgroundColor:[
+                                'rgba(37, 255, 109)',
+
+                            ],
+                            hoverBackgroundColor:[
+                                'rgba(169, 255, 201)',
+                                
+                            ],
+                            borderWidth: 1,
+                            borderColor:[
+                                'rgba(0, 255, 0)',
+                            ]
+                        },
+                        {
+                            label: 'Egresos',
+                            
+                            data: data.valoro,
                             backgroundColor:[
                                 'rgba(230, 16, 255)',
 
@@ -269,16 +287,18 @@
                             ],
                             borderWidth: 1,
                             borderColor:[
-                                'rgba(0,0,0)',
-                            ]
-                        }]
+                                'rgba(255, 0, 0)',
+                            ] 
+                        }
+                    ]
+                        
                 },
                 options:{
                     lineTension: 0.3,
                     plugins: {
                         responsive: true,
                         legend:{
-                            display: false,
+                            display: true,
                         },
                         title:{
                             display: true,

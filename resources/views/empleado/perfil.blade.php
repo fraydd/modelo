@@ -91,7 +91,7 @@
                     
                     <div class=" d-flex justify-content-center">
                     
-                        <img class="imagen d-flex justify-content-center" src="{{ asset('images/modelos/'.$modelo->foto) }}" >
+                        <img class="imagen d-flex justify-content-center" src="{{ asset($modelo->foto) }}" >
                         
                     </div> 
                     <h3 class="d-flex justify-content-center "> <b>{{$modelo->nombre}}</b></h3> 

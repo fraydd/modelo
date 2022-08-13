@@ -235,4 +235,5 @@ class EmpleadoController extends Controller
             }
         return view('empleado.ingresoe');
     }
+    
 }

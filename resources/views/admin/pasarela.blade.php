@@ -96,7 +96,7 @@ input.error {
                 <div class="mb-3">
                     <label class="form-label" for="meses_pagados">Valor a abonar</label>
                     
-                        <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="$">
+                        <input class="form-control" type="number" name="abona" id="abona" disabled max="1" placeholder="$">
                            
                     
             
@@ -227,6 +227,7 @@ input.error {
   </div>
 </div>
 
+
 <script>
     const adeudos = @json($adeudos);
     const pasarelas = @json($pasar);
@@ -313,26 +314,6 @@ pasarelafcn("#tabla tbody",table)
 
         function uniformefcn(tbody, table){
             $(tbody).on("click","button.uniforme", function(){
-                var data=table.row($(this).parents("tr")).data();
-                var id=data['id']
-                var url ="{{route('modelos.uniformeput',1)}}"
-                url = url.replace('1', id);
-                $('#form1').attr('action',url);
-                $("#form1")[0].reset();
-
-                $("#pago").val("false");
-                $( "#abona" ).prop( "disabled", true );
-                $("#precio").change(function(){
-                    var a=$( "#precio" ).val();
-                    console.log(a)
-                    $( "#abona" ).rules( "add", {
-                        max:a,
-                        messages:{
-                            max:"El valor abonado no puede superar el monto total"
-                        }
-                    });
-
-                })
 
                 $("#form1").validate({
                                 rules: {
@@ -345,6 +326,7 @@ pasarelafcn("#tabla tbody",table)
                                         
                                     },
                                     abona:{
+                                        max:100000000,
                                         required:true,
                                         
                                     }
@@ -353,9 +335,32 @@ pasarelafcn("#tabla tbody",table)
                                     tipo:{required:"Campo requerido"},
                                     precio:{required:"Campo requerido"},
                                     abona:{required:"Campo requerido",
+                                        max:"Cifra demasiado alta"
                                     }
                                 }
                             })
+
+
+
+
+                var data=table.row($(this).parents("tr")).data();
+                var id=data['id']
+                var url ="{{route('modelos.uniformeput',1)}}"
+                url = url.replace('1', id);
+                $('#form1').attr('action',url);
+                $("#form1")[0].reset();
+
+                $("#pago").val("false");
+                $( "#abona" ).prop( "disabled", true );
+                $("#precio").change(function(){
+                    var a= $( "#precio" ).val();
+                    console.log(a)
+                    $('#abona').attr('max',a);
+                    
+
+                })
+
+                
                 
 
 
@@ -396,7 +401,7 @@ pasarelafcn("#tabla tbody",table)
                 '<td hidden>'+adeudosm[i].id+'</td>'+
                 '<td>'+adeudosm[i].tipo+'</td>'+
                 '<td>'+f.format( adeudosm[i].monto)+'</td>'+
-                '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm" >borrar</button>'+'</td>'+
+                '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm" >Saldar</button>'+'</td>'+
                 '<td>'+'<button id="editar'+adeudosm[i].id+'" class="btn btn-outline-warning  btn-sm" data-bs-toggle="modal" data-bs-target="#editar" >Editar</button>'+'</td>'+
                 
                 '</tr>';
@@ -406,7 +411,7 @@ pasarelafcn("#tabla tbody",table)
                 var id='a'
                     $(document).on('click', 'button', function() {
                         if (this.id.slice(0,6)=='borrar') {
-                            if (confirm('seguro?')==true) {
+                            if (confirm('¿Pagar completamente la deuda ?')==true) {
                                 let idb = this.id;
                             var id=idb.slice(6);
                             var url="{{route('modelos.borrarad', 1)}}";

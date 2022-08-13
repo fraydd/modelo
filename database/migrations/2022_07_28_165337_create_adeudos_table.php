@@ -21,7 +21,8 @@ class CreateAdeudosTable extends Migration
             $table->unsignedBigInteger('modelo_id');
             $table->foreign('modelo_id')
                 ->references('id')
-                ->on('modelos');
+                ->on('modelos')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });

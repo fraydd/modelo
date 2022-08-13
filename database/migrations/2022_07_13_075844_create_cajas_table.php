@@ -19,6 +19,7 @@ class CreateCajasTable extends Migration
             $table->string('paga');
             $table->string('recibe');
             $table->string('concepto');
+            $table->boolean('estado');
 
             $table->timestamps();
         });

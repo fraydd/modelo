@@ -18,7 +18,7 @@ figure{
 </style>
 <div class="div">
     <figure>
-        <img class="img" src="{{ asset('images/modelos/'.$foto)}}" alt="imagen {{$nombre}}" > 
+        <img class="img" src="{{ asset($foto)}}" alt="imagen {{$nombre}}" > 
     </figure>
     
 </div>

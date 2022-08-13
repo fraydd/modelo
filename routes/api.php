@@ -78,6 +78,21 @@ Route::get('datatable3',function(){
     ->toJson();
 });
 
+Route::get('cajaroot',function(){
+    $cajas=Caja::all();
+    foreach($cajas as $caja)
+    {
+        $caja->valor=number_format($caja->valor,0);
+    }
+
+    return datatables()
+    ->of($cajas)
+    ->addColumn('btn','actioncajaroot')
+    ->rawColumns(['btn'])
+    ->toJson();
+
+});
+
 Route::get('datatable4',function(){
 
     $modelos=modelo::all();
