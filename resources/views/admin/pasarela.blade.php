@@ -597,19 +597,7 @@ pasarelafcn("#tabla tbody",table)
 
 
 
-            $( "#guardar2" ).on( "click", function() {
-            setTimeout(function(){
-                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
-                                console.log('reload')
-                            }, 4000);
-            });
-
-            $( "#guardar3" ).on( "click", function() {
-            setTimeout(function(){
-                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
-                                console.log('reload')
-                            }, 4000);
-            });
+   
     
     </script>
 
