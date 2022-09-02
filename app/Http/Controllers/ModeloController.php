@@ -12,7 +12,9 @@ use App\Models\rh;
 use App\Models\sex;
 use App\Models\Tarifa;
 use Carbon\Carbon;
+use Illuminate\Contracts\Validation\Validator;
 use Hamcrest\Core\HasToString;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -71,10 +73,25 @@ class ModeloController extends Controller
         return view('admin.Registrar',compact('sexes','identifications','rhs'));
     }
 
-   
+   public function pdf(){
+    $recu =modelo::all()->sortByDesc('created_at')->take(1)->toArray();
+    
+    $modelo=new modelo(reset($recu));
+    
+
+    $recucaja=Caja::all()->sortByDesc('created_at')->take(1)->toArray();
+    
+    
+    // PDF
+    $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
+    $pdf->render('pago.pdf');
+    $pdf->stream();
+   }
+
     public function store(Request $request)
     {
-        
+
+       
         $request->validate([
             'nombre'=>'required',
             'nid'=>'required|integer|between:0,10000000000',
@@ -106,13 +123,11 @@ class ModeloController extends Controller
             'meses_pagados'=>'required|integer|between:0,24',
             'fecha_pago'=>'required|date',
             'abona'=>'integer|gt:0'
-
-
-
-            
         ]);
+        
+        
        
-        $modelo=$request->except('_token','abona','pago');
+        $modelo=$request->except('_token','abona','pago','medio');
         
 
         if($foto=$request->file('foto')){
@@ -132,6 +147,13 @@ class ModeloController extends Controller
             $modelo = new modelo($modelo);
             $modelo->save();
 
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
             // Registrando en caja
             $registro =Tarifa::findOrFail(1);
             $valor=intval($modelo->meses_pagados)*$registro->valor;
@@ -149,6 +171,8 @@ class ModeloController extends Controller
             $modelo->total=$valor*$modelo->cantidad;
             $modelo->importe=$valor*$modelo->cantidad;
 
+            
+
 
         } else{
             $registro =Tarifa::findOrFail(1);
@@ -163,7 +187,13 @@ class ModeloController extends Controller
             $adeudo->modelo_id=$modelo->id;
             $adeudo->save();
 
-            
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
 
             // Registrando en caja
             $registro =Tarifa::findOrFail(1);
@@ -183,12 +213,18 @@ class ModeloController extends Controller
             $modelo->importe= $request->abona;
             $modelo->saldo=$valor*intval($modelo->meses_pagados)-$request->abona;
 
-        }
-        
+            
 
-        // PDF
+        }
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
-        return $pdf->download('pago.pdf');
+        return $pdf->stream("Sus_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
+
+        //return $pdf->download('pago.pdf');
+        
+        
+        //return view('admin.descarga');
+
+        
     
     }
 
@@ -333,7 +369,6 @@ class ModeloController extends Controller
     public function renovarpost(Request $request , modelo $modelo){
 
 
-
         
         
         $now =new Carbon( Carbon::now()->format('Y-m-d'));
@@ -411,6 +446,16 @@ class ModeloController extends Controller
             $modelo->tipo=$tipo;
             $modelo->total=$valor*$mes;
             $modelo->importe=$valor*$mes;
+
+            
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+            
+
         }else{
             
             $tarifa =Tarifa::findOrFail(1);
@@ -438,6 +483,12 @@ class ModeloController extends Controller
             $modelo->total=$request->abona;
             $modelo->importe=$request->abona;
             $modelo->saldo=$valor*$mes-$request->abona;
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
         }
 
         
@@ -446,8 +497,7 @@ class ModeloController extends Controller
 
         
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
-
-        return $pdf->download('pago.pdf');     
+        return $pdf->stream("Men_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
         
         
     }
@@ -809,8 +859,17 @@ class ModeloController extends Controller
 
             // PDF
             $modelo->saldo=0;
+
+            if (empty($request->medio2)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-            return $pdf->download('pago.pdf');
+            return $pdf->stream("Pas_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
+
 
         }else{
             /* Abona */
@@ -833,13 +892,23 @@ class ModeloController extends Controller
 
             // PDF
             $modelo->saldo=$modelo->valor-$request->abona2;
+            
+            if (empty($request->medio2)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-            return $pdf->download('pago.pdf');
+            return $pdf->stream("Pas_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
+
            
         }
 
     }
     public function uniformeput(Request $request , modelo $modelo){
+
         /* Datos generales para pdf */
         
         $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
@@ -861,8 +930,17 @@ class ModeloController extends Controller
 
             // PDF
             $modelo->saldo=0;
+
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-            return $pdf->download('pago.pdf');
+            return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
+
         }else{
             $adeudo=new Adeudo();
             $adeudo->tipo=$request->tipo;
@@ -882,8 +960,16 @@ class ModeloController extends Controller
 
             // PDF
             $modelo->saldo=$modelo->valor-$request->abona;
+            if (empty($request->medio)) {
+                $modelo->medio="Consignación";
+            } else{
+                $modelo->medio="Efectivo";
+                
+            }
+
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-            return $pdf->download('pago.pdf');
+            return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
+
            
         }
 
@@ -912,6 +998,7 @@ class ModeloController extends Controller
             $modelo->tipo='Abono '.$adeudo->tipo;
             $modelo->total=$adeudo->monto;
             $modelo->importe=$adeudo->monto;
+            $modelo->medio="NA";
 
             // PDF
             $modelo->saldo=0;
@@ -921,7 +1008,8 @@ class ModeloController extends Controller
 
         }
         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-        return $pdf->download('pago.pdf');
+        return $pdf->download("Borrar_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf");
+
         
         
 
@@ -930,7 +1018,6 @@ class ModeloController extends Controller
     public function editad(Request $request ,Adeudo $adeudo){
         
 
-        
         
         $modelo=modelo::findOrFail($adeudo->modelo_id);
         
@@ -952,13 +1039,24 @@ class ModeloController extends Controller
          $modelo->total=$request->editarad;
          $modelo->importe=$request->editarad;
 
+
          // PDF
          $modelo->saldo=$adeudo->monto-$request->editarad;
 
          $adeudo->monto=$adeudo->monto-$request->editarad;
         $adeudo->save();
-         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
-        return $pdf->download('pago.pdf');
+
+        
+        if (empty($request->medio3)) {
+            $modelo->medio="Consignación";
+        } else{
+            $modelo->medio="Efectivo";
+            
+        }
+
+        $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+        return $pdf->stream("Abo_".str_replace(" ","",ucwords($adeudo->tipo))."_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
+
 
     }
 }

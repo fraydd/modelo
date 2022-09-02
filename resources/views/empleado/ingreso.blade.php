@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
     .imagen{
     height: auto;
     width: auto;
@@ -11,12 +19,17 @@
     overflow: hidden;
 }
 </style>
+    <title>Document</title>
+</head>
+<body >
+<div class="grid-block" style="background-image: url('images/fondo.png'); height: 100vh; min-height: 1000px; background-position: center; background-repeat: no-repeat; background-size: cover;">
 
-<div class="container">
+<br>
+<div class="container"  >
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header"><h5>Registro de ingreso de  usuarios.</h5></div>
+            <div class="card-transparent">
+                <div class="card-header"><h4 style="color:white ;" >Registro ingreso de  usuarios.</h4></div>
 
                 <div class="card-body">
                    
@@ -24,11 +37,11 @@
                 @csrf
                 
                 <div class="input-group mb-3">
-                    <span class="input-group-text">Ingrese su clave: </span>
+                    <span class="input-group-text bg-transparent"  style="color:white ;">Ingrese su clave: </span>
                     
-                    <input placeholder=" " autocomplete="off" type="text" class="form-control" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input placeholder=" " autocomplete="off" type="text" style="color:white ;" class="form-control  bg-transparent" name="di" id="di" aria-label="Recipient's username" aria-describedby="button-addon2">
                     
-                    <input type="submit" class="btn btn-outline-secondary" id="button-addon2">
+                    <input type="submit" class="btn btn-outline-secondary" style="color:white ; border-color:white;" id="button-addon2">
 
                 </div>
 
@@ -218,6 +231,9 @@
                                 document.getElementById('estado').innerHTML ='Suscripción vencida';
                                 const music = new Audio('sounds/access.mp3');
                                 music.play(); 
+                                
+                               
+
                                 if (c.length>=1) {
                                     
                                     for (let i = 0; i < c.length; i++) {
@@ -315,9 +331,15 @@
     
 </div>
 </div>
+</div> 
 
 
 
 
 
 @endsection
+</body>
+</html>
+
+
+

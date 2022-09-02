@@ -29,7 +29,7 @@ Route::post('perfil', [App\Http\Controllers\EmpleadoController::class, 'perfilpo
 Route::resource('modelos',ModeloController::class);
 Route::get('modelos/{modelo}/renovar',[App\Http\Controllers\ModeloController::class, 'renovar'])->name('modelos.renovar');
 Route::get('modelos/{modelo}/borrar',[App\Http\Controllers\ModeloController::class, 'borrar'])->name('modelos.borrar');
-Route::get('modelos/pdf',[App\Http\Controllers\ModeloController::class, 'pdf'])->name('modelos.pdf');
+Route::get('/pdf','App\Http\Controllers\ModeloController@pdf')->name('modelos.pdf');
 Route::put('modelos/renovar/{modelo}', 'App\Http\Controllers\ModeloController@renovarpost')->name('modelos.renovarpost');
 Route::put('modelos/uniforme/{modelo}', 'App\Http\Controllers\ModeloController@uniformeput')->name('modelos.uniformeput');
 Route::put('modelos/pasarela/{modelo}', [App\Http\Controllers\ModeloController::class, 'pasarelaput'])->name('modelos.pasarelaput');

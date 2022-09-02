@@ -39,13 +39,13 @@ input.error {
                     @method('PUT')
                     <label for="fecha_pago">Fecha de entrada en vigencia</label>
 
-                    <input class="form-control" type="date" name="fecha_pago" id="fecha_pago">
+                    <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" >
                     <br>
                     <label for="meses_pagados">Cantidad de meses</label>
 
                     
 
-                    <input class="form-control" min="0" type="number" name="meses_pagados" id="meses_pagados" autocomplete="off">
+                    <input class="form-control" min="0" type="number" name="meses_pagados" id="meses_pagados" autocomplete="off" max="100000">
                     <br>
                 <small style="color:orange ;">Si deja desmarcada la casilla "¿Abonar una parte?", se registrara el pago de la totalidad del monto.</small>
 
@@ -59,7 +59,13 @@ input.error {
                     <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="$">
 
                     <br>
-                    <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success">
+                    <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="Efectivo" data-off="Consignación" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+                    <br>
+                    <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success" onclick="return confirm('¿Estás seguro de renovar la suscripción?')">
+                         
+                        
+                       
+                    <br>
                  </form>
                 </div>
             </div>
@@ -69,6 +75,31 @@ input.error {
 
 <script>
     $(document).ready(function(){
+
+
+        $(function() {
+    $('#medio').bootstrapToggle({
+     
+    });
+    
+  })
+
+  $("#medio").val("on");
+  console.log($("#medio").val())
+  
+    $("#medio").change(function(){
+        
+        if ($("#medio").val()=="on") {
+            $("#medio").val("off")
+            
+        } else if($("#medio").val()=="off"){
+            $("#medio").val("on")
+            
+        }
+    console.log($("#medio").val())
+})
+
+
         $("#pago").val("false");
         $("#pago").change(function(){
             if ($("#pago").val()=='true') {
@@ -115,14 +146,7 @@ input.error {
 
     })
     function myFunction() {
-            var form = $( "#form" );
-            console.log()
-            if (form.valid()==true) {
-                setTimeout(function(){
-                location.href="{{route('modelos.index')}}"
-            },3000);
-            }
-            
+           
             
         }
 </script>

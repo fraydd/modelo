@@ -100,7 +100,14 @@ input.error {
                            
                     
             
+                </div>
+
+                <div class="mb-3">
+                    <small style="color:green ;">Efectivo</small> <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+                        <small style="color:red ;">Consignación</small>
                 </div><br>
+
+                
 
                 <button id="guardar1" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro: registrar venta de uniforme?')">Guardar</button>
             </form>
@@ -150,6 +157,11 @@ input.error {
                     <input class="form-control" type="number" name="abona2" id="abona2" disabled placeholder="$" >
                     
             
+                </div><br>
+
+                <div class="mb-3">
+                    <small style="color:green ;">Efectivo</small> <input id="medio2" name="medio2" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+                        <small style="color:red ;">Consignación</small>
                 </div><br>
 
                 <button id="guardar2" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
@@ -215,6 +227,11 @@ input.error {
                 
         
             </div><br>
+
+            <div class="mb-3">
+                    <small style="color:green ;">Efectivo</small> <input id="medio3" name="medio3" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+                        <small style="color:red ;">Consignación</small>
+                </div><br>
           
 
                 <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
@@ -231,7 +248,60 @@ input.error {
 <script>
     const adeudos = @json($adeudos);
     const pasarelas = @json($pasar);
-    
+
+    $(function() {
+        $('#medio').bootstrapToggle({});
+    })
+
+  $("#medio").val("on");
+  
+    $("#medio").change(function(){
+        
+        if ($("#medio").val()=="on") {
+            $("#medio").val("off")
+            
+        } else if($("#medio").val()=="off"){
+            $("#medio").val("on")
+            
+        }
+   
+})
+
+$(function() {
+        $('#medio2').bootstrapToggle({});
+    })
+
+  $("#medio2").val("on");
+  
+    $("#medio2").change(function(){
+        
+        if ($("#medio2").val()=="on") {
+            $("#medio2").val("off")
+            
+        } else if($("#medio2").val()=="off"){
+            $("#medio2").val("on")
+            
+        }
+   
+})
+
+$(function() {
+        $('#medio3').bootstrapToggle({});
+    })
+
+  $("#medio3").val("on");
+  
+    $("#medio3").change(function(){
+        
+        if ($("#medio3").val()=="on") {
+            $("#medio3").val("off")
+            
+        } else if($("#medio3").val()=="off"){
+            $("#medio3").val("on")
+            
+        }
+   
+})
 
     $("#pago").val("false");
     $("#pago").change(function(){
@@ -525,12 +595,7 @@ pasarelafcn("#tabla tbody",table)
                             })
         }
 
-        $( "#guardar1" ).on( "click", function() {
-            setTimeout(function(){
-                                window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
-                                console.log('reload')
-                            }, 4000);
-            });
+
 
             $( "#guardar2" ).on( "click", function() {
             setTimeout(function(){

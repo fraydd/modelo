@@ -442,6 +442,13 @@
         </div><br>
 
         
+        <div class="form-group row">
+            <label class="control-label col-sm-3 d-flex justify-content-end" for="meses_pagados"></label>
+            <div class="form-check col-sm-6" >
+                <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="Efectivo" data-off="Consignación" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+            </div>  
+        </div>     <br>
+
 
         <div class="form-group row">
             <label class="control-label col-sm-3 d-flex justify-content-end" for="fecha_pago">Fecha de entrada en vigencia *</label>
@@ -468,9 +475,7 @@
 
 
     </form>
-    <div class="col-sm-10">
-        <button id="refre" class="float-end btn btn-outline-danger">Refrescar</button>
-    </div>
+
 </div>
 </div>
 </div>
@@ -479,6 +484,30 @@
 <script>
 
 $(document).ready(function(){
+    $(function() {
+    $('#medio').bootstrapToggle({
+     
+    });
+    
+  })
+
+  $("#medio").val("on");
+  console.log($("#medio").val())
+  
+    $("#medio").change(function(){
+        
+        if ($("#medio").val()=="on") {
+            $("#medio").val("off")
+            
+        } else if($("#medio").val()=="off"){
+            $("#medio").val("on")
+            
+        }
+    console.log($("#medio").val())
+})
+
+document.getElementById("formul").reset();
+$( "#nombre" ).focus();
 
 $("#pago").val("false");
     $("#pago").change(function(){
@@ -498,23 +527,11 @@ $("#pago").val("false");
 
 
 
-        document.getElementById("refre").onclick = function() {myFunction()};
+        document.getElementById("registrar").onclick = function() {myFunction()};
 
         function myFunction() {
-           
-            
-            if ($("#nid").focus()) {
-                setTimeout(
-                function() 
-                {
-                    let formulario = document.getElementById('formul');
-                    location.reload();
-                }, 1000);
-            }
-   
-      formulario.reset();
-   
-  }
+            console.log('j')
+        }
 })
 
 </script>

@@ -16,6 +16,8 @@
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}" ></script>
     <script src="{{ asset('js/chart.min.js') }}" ></script>
     <script src="{{asset('js/jquery-validation@1.19.5.min.js')}}" ></script>
+    <script src="{{asset('js/bootstrap4-toggle.min.js')}}" ></script>
+
 
 
     <!-- Datatables -->
@@ -35,6 +37,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/bootstrap4-toggle.min.css') }}" rel="stylesheet">
+
     <!-- <link href="{{ asset('css/bulma.css') }}" rel="stylesheet"> -->
 </head>
 <body>

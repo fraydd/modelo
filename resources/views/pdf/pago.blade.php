@@ -53,6 +53,7 @@
 </style>
 
 
+
 <div id="app" class="col-11" style="padding: 70px 50px 70px;">
   <table>
       <tr>
@@ -72,6 +73,7 @@
         <p>Av.circunvalar calle 7#15-37</p>
         <p>Nit: 15431930-9</p>
         <p>Teléfono: 3244514208 / 3183600064</p>
+
       </div>
       
     </div>
@@ -91,6 +93,10 @@
             <tr>
                 <td><b>Fecha:</b></td>
                 <td>{{$modelo->fechafac}}</td>
+            </tr>
+            <tr>
+              <td><b>Medio de pago:</b></td>
+              <td>{{$modelo->medio}}</td>
             </tr>
 
 
