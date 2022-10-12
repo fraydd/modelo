@@ -443,11 +443,20 @@
 
         
         <div class="form-group row">
-            <label class="control-label col-sm-3 d-flex justify-content-end" for="meses_pagados"></label>
-            <div class="form-check col-sm-6" >
-                <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="Efectivo" data-off="Consignación" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
-            </div>  
-        </div>     <br>
+            <label for="medio_id" class="control-label col-sm-3 d-flex justify-content-end">Medio de pago</label>
+            <div class="col-sm-3">
+                <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id" >
+                <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                    @foreach($medios as $medio)
+                        <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                    @endforeach
+                </select>
+                @error('medio_id')
+                    <small style="color:brown ;" >*{{$message}}</small>
+                    <br>
+                @enderror
+            </div>
+        </div><br>
 
 
         <div class="form-group row">
@@ -484,27 +493,7 @@
 <script>
 
 $(document).ready(function(){
-    $(function() {
-    $('#medio').bootstrapToggle({
-     
-    });
-    
-  })
-
-  $("#medio").val("on");
-  console.log($("#medio").val())
   
-    $("#medio").change(function(){
-        
-        if ($("#medio").val()=="on") {
-            $("#medio").val("off")
-            
-        } else if($("#medio").val()=="off"){
-            $("#medio").val("on")
-            
-        }
-    console.log($("#medio").val())
-})
 
 document.getElementById("formul").reset();
 $( "#nombre" ).focus();

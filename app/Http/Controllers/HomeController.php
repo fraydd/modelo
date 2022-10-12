@@ -30,7 +30,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-      
+     
         $modelos=modelo::all();
         $i=0;
         foreach ($modelos as $modelo ) {
@@ -72,11 +72,12 @@ class HomeController extends Controller
 
     }
 
-    public function cajero( $concepto,  $valor,  $paga ){
+    public function cajero( $concepto,  $valor,  $paga, $medio ){
         $caja['estado']=1;
         $caja['concepto']=$concepto;
         $caja['valor']=$valor;
         $caja['paga']=$paga;
+        $caja['medio_id']=$medio;
         $caja['recibe']=Auth::user()->name;
         
         $caja=new Caja($caja);

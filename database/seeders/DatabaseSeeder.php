@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             SexSeeder::class,
             IdentificationSeeder::class,
             RhSeeder::class,
-            
+            mediosSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
     }

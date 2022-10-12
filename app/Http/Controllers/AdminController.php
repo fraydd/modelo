@@ -7,6 +7,7 @@ use App\Models\Caja;
 use App\Models\Eingreso;
 use App\Models\Ingreso;
 use App\Models\modelo;
+use App\Models\medio;
 use App\Models\Tarifa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,9 @@ class AdminController extends Controller
         ->with('mes', $mes);
     }
     public function caja(){
-        return view('empleado.caja');
+        $medios=medio::all();
+        
+        return view('empleado.caja', compact('medios'));
     }
 
     public function tarifaMes(Request $request){

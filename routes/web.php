@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
+   
     return view('welcome');
 })->name('welcome');
 
@@ -36,6 +37,8 @@ Route::put('modelos/pasarela/{modelo}', [App\Http\Controllers\ModeloController::
 Route::get('modelos/{adeudo}/borrarad',[App\Http\Controllers\ModeloController::class, 'borrarad'])->name('modelos.borrarad');
 Route::get('modelos/{adeudo}/editarad',[App\Http\Controllers\ModeloController::class, 'editarad'])->name('modelos.editarad');
 Route::put('modelos/editad/{adeudo}', [App\Http\Controllers\ModeloController::class, 'editad'])->name('modelos.editad');
+Route::put('modelos/delad/{adeudo}', [App\Http\Controllers\ModeloController::class, 'delad'])->name('modelos.delad');
+
 
 
 Route::get('pasarela',[App\Http\Controllers\ModeloController::class, 'pasarela'])->name('modelos.pasarela');

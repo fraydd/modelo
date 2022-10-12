@@ -59,7 +59,17 @@ input.error {
                     <input class="form-control" type="number" name="abona" id="abona" disabled placeholder="$">
 
                     <br>
-                    <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="Efectivo" data-off="Consignación" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
+                    <div class="form-group row">
+                                <label for="paga" class="col-sm-3 col-form-label">Medio de pago</label>
+                                <div class="col-sm-4">
+                                    <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id" >
+                                    <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                                        @foreach($medios as $medio)
+                                            <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div><br>
                     <br>
                     <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success" onclick="return confirm('¿Estás seguro de renovar la suscripción?')">
                          
@@ -77,27 +87,7 @@ input.error {
     $(document).ready(function(){
 
 
-        $(function() {
-    $('#medio').bootstrapToggle({
      
-    });
-    
-  })
-
-  $("#medio").val("on");
-  console.log($("#medio").val())
-  
-    $("#medio").change(function(){
-        
-        if ($("#medio").val()=="on") {
-            $("#medio").val("off")
-            
-        } else if($("#medio").val()=="off"){
-            $("#medio").val("on")
-            
-        }
-    console.log($("#medio").val())
-})
 
 
         $("#pago").val("false");
@@ -134,12 +124,16 @@ input.error {
                                     },
                                     abona:{
                                         required: true,
+                                    },
+                                    medio_id:{
+                                        required: true,
                                     }
                                 },
                                 messages:{
                                     meses_pagados:{required:"Campo requerido"},
                                     fecha_pago:{required:"Campo requerido"},
-                                    abona:{required:"Campo requerido"}
+                                    abona:{required:"Campo requerido"},
+                                    medio_id:{required:"Campo requerido"}
                                     
                                 }
                             })

@@ -8,6 +8,7 @@ use App\Models\modelo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Models\medio;
 
 
 /*
@@ -80,9 +81,20 @@ Route::get('datatable3',function(){
 
 Route::get('cajaroot',function(){
     $cajas=Caja::all();
+    
     foreach($cajas as $caja)
     {
         $caja->valor=number_format($caja->valor,0);
+        if ($caja->medio_id==1) {
+            $caja->medio_id='Efectivo';
+        }elseif ($caja->medio_id==2) {
+            $caja->medio_id='Transferencia';
+
+            
+        }else{
+            $caja->medio_id='NA';
+
+        }
     }
 
     return datatables()

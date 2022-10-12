@@ -6,6 +6,7 @@ use App\Models\Adeudo;
 use App\Models\Admin;
 use App\Models\Caja;
 use App\Models\identification;
+use App\Models\medio;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\modelo;
 use App\Models\rh;
@@ -42,6 +43,7 @@ class ModeloController extends Controller
         
         $modelos=modelo::all();
        
+       
         foreach($modelos as $modelo)
             {
                 if($modelo->estado==1){
@@ -51,26 +53,20 @@ class ModeloController extends Controller
                 }
             
             }
-            
-       
-        
         $array=$modelo->getAttributes();
-        
-        
-
-        
-        
         return view('admin.index');
     }
 
     
     public function create()
     {
+        
         $sexes=sex::all();
         $identifications=identification::all();
         $rhs=rh::all();
+        $medios=medio::all();
         
-        return view('admin.Registrar',compact('sexes','identifications','rhs'));
+        return view('admin.Registrar',compact('sexes','identifications','rhs','medios'));
     }
 
    public function pdf(){
@@ -90,7 +86,7 @@ class ModeloController extends Controller
 
     public function store(Request $request)
     {
-
+        
        
         $request->validate([
             'nombre'=>'required',
@@ -122,7 +118,8 @@ class ModeloController extends Controller
             'identification_id'=>'required',
             'meses_pagados'=>'required|integer|between:0,24',
             'fecha_pago'=>'required|date',
-            'abona'=>'integer|gt:0'
+            'abona'=>'integer|gt:0',
+            'medio_id'=>'required',
         ]);
         
         
@@ -147,18 +144,13 @@ class ModeloController extends Controller
             $modelo = new modelo($modelo);
             $modelo->save();
 
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+            
 
             // Registrando en caja
             $registro =Tarifa::findOrFail(1);
             $valor=intval($modelo->meses_pagados)*$registro->valor;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre);
+            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre,intval($request->medio_id));
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -170,6 +162,9 @@ class ModeloController extends Controller
             $modelo->tipo=$tipo;
             $modelo->total=$valor*$modelo->cantidad;
             $modelo->importe=$valor*$modelo->cantidad;
+
+            $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
 
             
 
@@ -187,19 +182,13 @@ class ModeloController extends Controller
             $adeudo->modelo_id=$modelo->id;
             $adeudo->save();
 
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
-
+            
 
             // Registrando en caja
             $registro =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$registro->tipo, $valor, $modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono '.$registro->tipo, $valor, $modelo->nombre,intval($request->medio_id));
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -212,6 +201,9 @@ class ModeloController extends Controller
             $modelo->total=$request->abona;
             $modelo->importe= $request->abona;
             $modelo->saldo=$valor*intval($modelo->meses_pagados)-$request->abona;
+
+            $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
 
             
 
@@ -362,8 +354,9 @@ class ModeloController extends Controller
         $nombre=$modelo->nombre;
         $id=$modelo->id;
         $vence=$modelo->fecha_vence;
+        $medios=medio::all();
        
-        return view('admin.renovar')->with('nombre', $nombre)->with('id',$id)->with('vence',$vence)->with('valor',$valor);
+        return view('admin.renovar',compact('medios'))->with('nombre', $nombre)->with('id',$id)->with('vence',$vence)->with('valor',$valor);
     }
 
     public function renovarpost(Request $request , modelo $modelo){
@@ -434,7 +427,7 @@ class ModeloController extends Controller
             $valor=intval($mes)*$tarifa->valor;
             
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre);
+            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id));
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -447,13 +440,11 @@ class ModeloController extends Controller
             $modelo->total=$valor*$mes;
             $modelo->importe=$valor*$mes;
 
+            $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
+
             
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+           
             
 
         }else{
@@ -461,7 +452,7 @@ class ModeloController extends Controller
             $tarifa =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$tarifa->tipo, $valor,$modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono '.$tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id));
 
             $adeudo=new Adeudo();
             $adeudo->tipo='Mensualidad';
@@ -483,12 +474,8 @@ class ModeloController extends Controller
             $modelo->total=$request->abona;
             $modelo->importe=$request->abona;
             $modelo->saldo=$valor*$mes-$request->abona;
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+            $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
         }
 
         
@@ -509,9 +496,6 @@ class ModeloController extends Controller
             
             'deuda'=>'integer|gt:0'
 
-
-
-            
         ]);
         
 
@@ -559,8 +543,12 @@ class ModeloController extends Controller
 
     public function borrar(modelo $modelo)
     {
-        unlink($modelo->foto);
+        if (file_exists($modelo->foto)) {
+            unlink($modelo->foto);
+            
+        }
         $modelo->delete();
+        
 
         $modelos=modelo::all();
         
@@ -572,20 +560,19 @@ class ModeloController extends Controller
 
 
     public function caja(){
+        $medios=medio::all();
         
-        
-        return view('admin.caja');
+        return view('admin.caja',compact('medios'));
     }
 
     public function cajapost(Request $request){
-        
         $modelo=new modelo();
         $modelo->nombre=$request->paga;
         $modelo->correo=$request->paga;
        
          // Registrando en caja
          $cajero= new HomeController;
-         $ejecutar=$cajero->cajero($request->concepto,intval($request->valor), $request->paga);
+         
 
          $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
          $fechafac=$fechafac->format('Y-m-d');
@@ -597,23 +584,62 @@ class ModeloController extends Controller
          $modelo->tipo=$tipo;
          $modelo->total=$valor;
          $modelo->importe=$valor;
+
+         $ejecutar=$cajero->cajero($request->concepto,intval($request->valor), $request->paga, intval( $request->medio_id));
+         $medio=medio::find($request->medio_id);
+         $modelo->medio=$medio->medio;
+         
+         
  
          // PDF
          $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
-         return $pdf->download('pago.pdf');
+         //return $pdf->download('pago.pdf');
+
+         
+        return $pdf->stream("Ingreso_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
+
 
         
     }
     public function cajapostegreso(Request $request){
+        
         $caja['estado']=0;
         $caja['concepto']=$request->concepto;
         $caja['valor']=$request->valor;
         $caja['paga']=Auth::user()->name;
         $caja['recibe']=$request->paga;
+        $caja['medio_id']=intval( $request->medio_id);
+
+        
+        
+        $modelo=new modelo();
+        $modelo->retira=Auth::user()->name;
+        $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
+         $fechafac=$fechafac->format('Y-m-d');
+         $modelo->fechafac=$fechafac;
+         $modelo->cantidad=1;
+         $modelo->valor=$request->valor;
+         $modelo->tipo=$request->concepto;
+         $modelo->total=$modelo->valor;
+         $modelo->importe=$modelo->valor;
+         $modelo->paga=$request->paga;
+
+        $medio=medio::find( intval( $request->medio_id));
+         $modelo->medio=$medio->medio;
+
+        
         
         $caja=new Caja($caja);
         $caja->save();
-        return view('admin.caja');
+
+        $pdf = Pdf::loadView('pdf.retiro', ['modelo'=>$modelo]);
+        //return $pdf->download('pago.pdf');
+
+        
+       return $pdf->stream("Retiro_".str_replace(" ","",ucwords($modelo->retira))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
+
+
+        
     }
 
 
@@ -807,7 +833,7 @@ class ModeloController extends Controller
     public function pasarela(){
 
         
-
+        $medios=medio::all();
 
         $adeudos=Adeudo::all();
         $tipo='pasarela';
@@ -830,12 +856,13 @@ class ModeloController extends Controller
     
         
         
-        return view('admin.pasarela',compact('pasarelas'))
+        return view('admin.pasarela',compact('pasarelas','medios'))
         ->with('adeudos',$adeudos)
         ->with('pasar',$pasar);
 
     }
     public function pasarelaput(Request $request , modelo $modelo){
+        
         $consepto =Tarifa::findOrFail($request->pasarela);
 
         /* Datos generales para pdf */
@@ -844,13 +871,16 @@ class ModeloController extends Controller
         $modelo->valor=Tarifa::find($request->pasarela)->valor;
         $modelo->cantidad=1;
 
+        $medio=medio::find($request->medio_id);
+        $modelo->medio=$medio->medio;
+
 
         if (empty($request->pago2)) {
             /* paga todo */
             
             
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre);
+            $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre,intval($request->medio_id));
             
             /* Datos particulares para pdf */
             $modelo->tipo=Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
@@ -861,7 +891,7 @@ class ModeloController extends Controller
             $modelo->saldo=0;
 
             if (empty($request->medio2)) {
-                $modelo->medio="Consignación";
+                $modelo->medio="Transferencia";
             } else{
                 $modelo->medio="Efectivo";
                 
@@ -883,7 +913,7 @@ class ModeloController extends Controller
             // Registrando en caja
             $cajero= new HomeController;
             $a=$consepto->tipo.' '.$consepto->nombre;
-            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre,intval($request->medio_id));
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
@@ -893,12 +923,7 @@ class ModeloController extends Controller
             // PDF
             $modelo->saldo=$modelo->valor-$request->abona2;
             
-            if (empty($request->medio2)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+       
 
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Pas_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
@@ -911,17 +936,21 @@ class ModeloController extends Controller
 
         /* Datos generales para pdf */
         
+        
         $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
         $modelo->fechafac=$fechafac->format('Y-m-d');
         $modelo->valor=$request->precio;
         $modelo->cantidad=1;
+
+        $medio=medio::find($request->medio_id);
+        $modelo->medio=$medio->medio;
         
 
         if (empty($request->pago)) {
             /* paga todo */
             $cajero= new HomeController;
             
-            $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre);
+            $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre,intval($request->medio_id));
 
             /* Datos particulares para pdf */
             $modelo->tipo=$request->tipo;
@@ -931,12 +960,7 @@ class ModeloController extends Controller
             // PDF
             $modelo->saldo=0;
 
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+            
 
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
@@ -951,7 +975,7 @@ class ModeloController extends Controller
             // Registrando en caja
             $cajero= new HomeController;
             $a=$request->tipo;
-            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre,intval($request->medio_id));
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.$request->tipo;
@@ -960,12 +984,7 @@ class ModeloController extends Controller
 
             // PDF
             $modelo->saldo=$modelo->valor-$request->abona;
-            if (empty($request->medio)) {
-                $modelo->medio="Consignación";
-            } else{
-                $modelo->medio="Efectivo";
-                
-            }
+            
 
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
@@ -977,9 +996,7 @@ class ModeloController extends Controller
         
         
     }
-
-    public function borrarad(Adeudo $adeudo){
-        
+    public function delad(Request $request ,Adeudo $adeudo){
         if ($adeudo->delete()) {
 
             $modelo=modelo::findOrFail($adeudo->modelo_id);
@@ -992,13 +1009,14 @@ class ModeloController extends Controller
             $modelo->cantidad=1;
 
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre);
+            $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre, intval($request->medio_id));
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.$adeudo->tipo;
             $modelo->total=$adeudo->monto;
             $modelo->importe=$adeudo->monto;
-            $modelo->medio="NA";
+            $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
 
             // PDF
             $modelo->saldo=0;
@@ -1010,10 +1028,9 @@ class ModeloController extends Controller
         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
         return $pdf->download("Borrar_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf");
 
-        
-        
-
     }
+
+    
 
     public function editad(Request $request ,Adeudo $adeudo){
         
@@ -1024,7 +1041,7 @@ class ModeloController extends Controller
          // Registrando en caja
          $cajero= new HomeController;
          
-         $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre);
+         $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre,intval($request->medio_id));
         
 
         /* Datos generales para pdf */
@@ -1047,12 +1064,8 @@ class ModeloController extends Controller
         $adeudo->save();
 
         
-        if (empty($request->medio3)) {
-            $modelo->medio="Consignación";
-        } else{
-            $modelo->medio="Efectivo";
-            
-        }
+        $medio=medio::find($request->medio_id);
+            $modelo->medio=$medio->medio;
 
         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
         return $pdf->stream("Abo_".str_replace(" ","",ucwords($adeudo->tipo))."_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));

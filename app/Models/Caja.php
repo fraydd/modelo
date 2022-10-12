@@ -15,7 +15,12 @@ class Caja extends Model
         'recibe',
         'concepto',
         'valor',
-    'estado'];
+        'estado',
+        'medio_id'];
+
+        public function medios(){
+            return $this->belongsTo(medio::class);
+            }
         
         protected function serializeDate(DateTimeInterface $date)
         {

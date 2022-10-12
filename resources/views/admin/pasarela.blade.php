@@ -102,10 +102,20 @@ input.error {
             
                 </div>
 
-                <div class="mb-3">
-                    <small style="color:green ;">Efectivo</small> <input id="medio" name="medio" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
-                        <small style="color:red ;">Consignación</small>
-                </div><br>
+                <div class="form-group row">
+                            <label for="paga" class="col-sm-3 col-form-label">Medio de pago</label>
+
+                                <div class="col-sm-4">
+                                    <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id">
+                                    <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                                        @foreach($medios as $medio)
+                                            <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> 
+
+                
 
                 
 
@@ -159,10 +169,18 @@ input.error {
             
                 </div><br>
 
-                <div class="mb-3">
-                    <small style="color:green ;">Efectivo</small> <input id="medio2" name="medio2" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
-                        <small style="color:red ;">Consignación</small>
-                </div><br>
+                <div class="form-group row">
+                            <label for="medio_id" class="col-sm-3 col-form-label">Medio de pago</label>
+
+                                <div class="col-sm-4">
+                                    <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id" >
+                                    <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                                        @foreach($medios as $medio)
+                                            <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> 
 
                 <button id="guardar2" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
             </form>
@@ -187,9 +205,8 @@ input.error {
                 <thead>
                     <tr>
                         <th hidden>Id</th>
-                        <th>Consepto</th>
-                        <th>Valor</th>
-                        <th >&nbsp;</th>
+                        <th>Concepto</th>
+                        <th>Valor</th>    
                         <th >&nbsp;</th>
                     </tr> 
                 </thead>
@@ -210,31 +227,70 @@ input.error {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Editar deuda</h5>
+      <h5 class="modal-title" id="exampleModalLabel"><b id="concepto"></b> <b id="debe"></b></h5>
+
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+            
+            
             <form id="formad" action="{{route('modelos.editad',1)}}" method="post" enctype='multipart/form-data'>
-            @csrf
-            @method('PUT')
-            <p id="consepto"></p>
-            <p id="debe"></p><br>
-            <div class="mb-3">
-                <label class="form-label" for="meses_pagados">Valor a abonar</label>
-                
-                    <input class="form-control" type="number" name="editarad" id="editarad" required placeholder="$">
+                @csrf
+                @method('PUT')
+                <fieldset style="border:solid #bcddff; border-radius:2%;  " class="form-group p-2">
+                    <legend style="float:none ;" class="w-auto px-2">Abonar</legend>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="editarad">Valor</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="number" name="editarad" id="editarad" required placeholder="$">
+                        </div>
+                    </div><br>
+                    
+                    <div class="form-group row">
+                    <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
 
-                
-        
-            </div><br>
-
-            <div class="mb-3">
-                    <small style="color:green ;">Efectivo</small> <input id="medio3" name="medio3" type="checkbox" checked data-toggle="toggle" data-on="E" data-off="C" data-onstyle="success" data-offstyle="danger" data-size="xs" value="on">
-                        <small style="color:red ;">Consignación</small>
-                </div><br>
-          
-
+                        <div class="col-sm-4">
+                            <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id" >
+                            <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                                @foreach($medios as $medio)
+                                    <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
+
+            
+                
+                
+                </fieldset>
+            </form>
+
+            <form id="formdel" action="{{route('modelos.delad',1)}}" method="post" enctype='multipart/form-data'>
+                @csrf
+                @method('PUT')
+                <fieldset style="border:solid #bcddff; border-radius:2%;  " class="form-group p-2">
+                    <legend style="float:none ;" class="w-auto px-2">Saldar</legend>
+                    
+                    <div class="form-group row">
+                    <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
+
+                        <div class="col-sm-4">
+                            <select class="form-select" aria-label="Default select example"  name="medio_id" id="medio_id" >
+                            <option  value="{{old('medio_id')}}">- Seleccione -</option>
+                                @foreach($medios as $medio)
+                                    <option value="{{ $medio['id'] }}">  {{ $medio['medio'] }}  </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de saldar el adeudo?')" >Guardar</button>
+
+            
+                
+                
+                </fieldset>
             </form>
 
 
@@ -399,14 +455,19 @@ pasarelafcn("#tabla tbody",table)
                                         max:100000000,
                                         required:true,
                                         
+                                    },
+                                    medio_id:{
+                                        required:true,
                                     }
+
                                 },
                                 messages:{
                                     tipo:{required:"Campo requerido"},
                                     precio:{required:"Campo requerido"},
                                     abona:{required:"Campo requerido",
                                         max:"Cifra demasiado alta"
-                                    }
+                                    },
+                                    medio_id:{required:"Campo requerido"}
                                 }
                             })
 
@@ -471,8 +532,8 @@ pasarelafcn("#tabla tbody",table)
                 '<td hidden>'+adeudosm[i].id+'</td>'+
                 '<td>'+adeudosm[i].tipo+'</td>'+
                 '<td>'+f.format( adeudosm[i].monto)+'</td>'+
-                '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm" >Saldar</button>'+'</td>'+
-                '<td>'+'<button id="editar'+adeudosm[i].id+'" class="btn btn-outline-warning  btn-sm" data-bs-toggle="modal" data-bs-target="#editar" >Editar</button>'+'</td>'+
+/*                 '<td>'+'<button id="borrar'+adeudosm[i].id+'" class="btn btn-outline-danger btn-sm" >Saldar</button>'+'</td>'+*/
+                '<td>'+'<button id="editar'+adeudosm[i].id+'" class="btn btn-outline-warning  btn-sm" data-bs-toggle="modal" data-bs-target="#editar" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/></svg></button>'+'</td>'+
                 
                 '</tr>';
                 }
@@ -480,7 +541,7 @@ pasarelafcn("#tabla tbody",table)
                 
                 var id='a'
                     $(document).on('click', 'button', function() {
-                        if (this.id.slice(0,6)=='borrar') {
+/*                         if (this.id.slice(0,6)=='borrar') {
                             if (confirm('¿Pagar completamente la deuda ?')==true) {
                                 let idb = this.id;
                             var id=idb.slice(6);
@@ -498,7 +559,7 @@ pasarelafcn("#tabla tbody",table)
                             
 
                             
-                        }
+                        } */
                         if(this.id.slice(0,6)=='editar'){
                             console.log('editar')
                             let idb = this.id;
@@ -506,32 +567,45 @@ pasarelafcn("#tabla tbody",table)
                             var deuda =  adeudos.filter(function(deuda) {
                                 return deuda.id == id;
                             });
-                            $("#consepto").text('Consepto: '+deuda['0']['tipo']);
+                            $("#concepto").text(''+deuda['0']['tipo']+':');
                             const f =new Intl.NumberFormat('es-CO', {style: 'currency',currency: 'COP',minimumFractionDigits: 0})
                             var debe=f.format(deuda['0']['monto'])
-                            $("#debe").text('Actualmente debe: '+debe);
+                            $("#debe").text(''+debe);
                             var url ="{{route('modelos.editad',1)}}"
                             url = url.replace('1', id);
                             $('#formad').attr('action',url);
-                            $('#submitad').on('click',function(){
-                                
-                                setTimeout(function(){
-                                    window.location.href = 'http://localhost/modelo/public/pasarela'; //Will take you to Google.
-                                    console.log('reload')
-                                }, 4000);
-            
-                            })
+
+                            var urldel ="{{route('modelos.delad',1)}}"
+                            urldel = urldel.replace('1', id);
+                            $('#formdel').attr('action',urldel);
+                            
 
                             $("#formad").validate({
                                 rules: {
                                     editarad : {
                                         required: true,
                                         max:deuda['0']['monto']-100,
-                                    }
+                                    },
+                                    medio_id:{required:true}
+
                                 },
                                 messages:{
                                     editarad:{required:"Campo requerido", 
-                                    max:"El valor abonado no puede superar el monto total"}
+                                    max:"El valor abonado no puede superar el monto total"},
+                                    medio_id:{required:"Campo requerido"}
+                                }
+                            })
+
+
+                            $("#formdel").validate({
+                                rules: {
+                                    
+                                    medio_id:{required:true}
+
+                                },
+                                messages:{
+                                    
+                                    medio_id:{required:"Campo requerido"}
                                 }
                             })
                             
@@ -564,16 +638,13 @@ pasarelafcn("#tabla tbody",table)
 
                     $("#form2").validate({
                     rules: {
-                        abona2 : {
-                        required: true,
-                        max:a-100,
-                        
-                        
-                        }
+                        abona2 : {required: true,max:a-100,},
+                        medio_id:{required:true},
                     },
                     messages:{
                         abona2:{required:"Campo requerido", 
-                            max:"El valor abonado no puede superar el monto total"}
+                            max:"El valor abonado no puede superar el monto total"},
+                        medio_id:{required:"Campo requerido"},
                     }
                 })
                     
