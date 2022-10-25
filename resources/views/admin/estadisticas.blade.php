@@ -2,6 +2,7 @@
 
 @section('content')
 
+
 <div class="container">
     
         
@@ -9,10 +10,13 @@
         <div class="card-header"><h5>Estadísticas</h5></div>
 
         <div class="card-body">
+        <div class="components">
+        </div>
 
             <div class="d-flex justify-content-center" >
-                    <div  style="border: solid; width:500px; height:auto;">
-                    <table class="table">
+                    <div  style=" width:700px; height:auto;">
+
+                    <table style="border:solid #5CC0F7 ;" class="table table-bordered ">
                             
                             <thead>
                                 <tr>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CajasExport;
 use App\Models\Adeudo;
 use App\Models\Admin;
 use App\Models\Caja;
@@ -22,6 +23,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use NumberFormatter;
 use phpDocumentor\Reflection\Types\Boolean;
+use App\Exports;
+use Illuminate\Validation\Rules\Exists;
+use Maatwebsite\Excel\Facades\Excel;
 
 use function PHPUnit\Framework\isNull;
 
@@ -490,54 +494,6 @@ class ModeloController extends Controller
     }
 
     
-    public function deudaput(Request $request , modelo $modelo){
-
-        $request->validate([
-            
-            'deuda'=>'integer|gt:0'
-
-        ]);
-        
-
-        $anterior=$modelo->deuda;
-        $modelo->deuda=$request->deuda;
-        $modelo->save();
-
-        $now =new Carbon( Carbon::now()->format('Y-m-d'));
-        $modelo->edad=$now->diffInYears($modelo->fechan);
-        $facebook=json_encode($modelo->facebook);
-        $instagram=json_encode($modelo->instagram);
-        $tiktok=json_encode($modelo->tiktok);
-        $twitter=json_encode($modelo->twitter);
-        $id=identification::find($modelo->identification_id);
-        $sex=sex::find($modelo->sex_id);
-        $rh=rh::find($modelo->rh_id);
-
-        $deuda=$modelo->deuda;
-        if (!empty($deuda)) {
-            session()->flash('deuda');
-            
-
-        }
-
-        if ($request->deuda<=$anterior) {
-            $valor=$anterior-$request->deuda;
-            $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono deuda', $valor,$modelo->nombre);
-        }
-        
-
-
-
-       
-        return view('empleado.perfil',compact('modelo','id','sex','rh'))
-        ->with('instagram',$instagram)
-        ->with('tiktok',$tiktok)
-        ->with('twitter',$twitter)
-        
-        ->with('facebook',$facebook);
-       
-    }
 
     public function destroy(modelo $modelo){}
 
@@ -639,6 +595,98 @@ class ModeloController extends Controller
        return $pdf->stream("Retiro_".str_replace(" ","",ucwords($modelo->retira))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
 
 
+        
+    }
+
+    public function cierreCaja(Request $request){
+        $inicio=new Carbon($request->inicio);
+        //$inicio=$inicio->format('Y-m-d');
+        $fin=new Carbon($request->fin);
+        //$fin=$fin->format('Y-m-d');
+
+        if ($request->ingresos=='on') {
+            $cajas=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['paga','recibe','concepto','medio_id'])->get();
+            $valor=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['valor'])->get();
+            $fecha=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['created_at'])->get();
+
+          
+
+        }elseif($request->egresos=='on'){
+            $cajas=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['paga','recibe','concepto','medio_id'])->get();
+            $valor=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['valor'])->get();
+            $fecha=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['created_at'])->get();
+
+
+        }
+        $i=0;
+        foreach ($cajas as $caja ) {
+            $caja->valor=$valor[$i]->valor;
+            $caja->fecha=$fecha[$i]->created_at->format('Y-m-d h:i:s');
+            $i++;
+            if($caja->medio_id==1){
+                $caja->medio_id='Efectivo';
+            }elseif($caja->medio_id==2){
+                $caja->medio_id='Transferencia';
+            }else{
+                $caja->medio_id='NA';
+            }
+        }
+        
+        $headings=["PAGA","RECIBE","CONCEPTO","MEDIO DE PAGO","VALOR","FECHA Y HORA"];
+
+        $now =Carbon::now()->format('Y-m-d');
+        
+        return Excel::download(new CajasExport($cajas,$headings),str_replace( " ","",'Cierre'.$now.'.xlsx'));
+        
+    }
+
+    public function cierreCajaPdf(Request $request){
+        $inicio=new Carbon($request->inicio);
+        $ini=$inicio->format('Y/m/d');
+        $fin=new Carbon($request->fin);
+        $fi=$fin->format('Y/m/d');
+        $rango=$ini.' - '.$fi;
+
+        if ($request->ingresos=='on') {
+            $estado='ingresos';
+
+            $cajas=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['paga','recibe','concepto','medio_id'])->get();
+            $valor=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['valor'])->get();
+            $fecha=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',1)->select(['created_at'])->get();
+
+          
+
+        }elseif($request->egresos=='on'){
+            $cajas=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['paga','recibe','concepto','medio_id'])->get();
+            $valor=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['valor'])->get();
+            $fecha=Caja::whereBetween('created_at', [$inicio, $fin])->where('estado',0)->select(['created_at'])->get();
+            $estado='egresos';
+
+
+        }
+        $i=0;
+        $suma=0;
+        setlocale(LC_MONETARY,"es_CO");
+        foreach ($cajas as $caja ) {
+            $aux=$valor[$i]->valor+$suma;
+            $suma=$aux;
+            $caja->valor='$ '.number_format( $valor[$i]->valor);
+            $caja->fecha=$fecha[$i]->created_at->format('Y-m-d h:i:s');
+            $i++;
+            if($caja->medio_id==1){
+                $caja->medio_id='Efectivo';
+            }elseif($caja->medio_id==2){
+                $caja->medio_id='Transferencia';
+            }else{
+                $caja->medio_id='NA';
+            }
+        }
+        $suma='$ '.number_format($suma);
+        $now =Carbon::now()->format('Y-m-d');
+
+        
+        $pdf = Pdf::loadView('pdf.cierrepdf', compact('cajas','now','suma','estado','rango'));
+        return $pdf->download(str_replace(" ","","cierre_".$now.".pdf"));
         
     }
 

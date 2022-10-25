@@ -45,6 +45,10 @@ Route::get('pasarela',[App\Http\Controllers\ModeloController::class, 'pasarela']
 Route::get('caja',[App\Http\Controllers\ModeloController::class, 'caja'])->name('modelos.caja');
 Route::post('caja', [App\Http\Controllers\ModeloController::class, 'cajapost'])->name('modelos.cajapost');
 Route::post('cajaegreso', [App\Http\Controllers\ModeloController::class, 'cajapostegreso'])->name('modelos.cajapostegreso');
+Route::post('cierreCaja', [App\Http\Controllers\ModeloController::class, 'cierreCaja'])->name('modelos.cierreCaja');
+Route::post('cierreCajaPdf', [App\Http\Controllers\ModeloController::class, 'cierreCajaPdf'])->name('modelos.cierreCajaPdf');
+
+
 
 Route::get('estadisticas',[App\Http\Controllers\ModeloController::class, 'estadisticas'])->name('modelos.estadisticas');
 Route::put('update/{usuario}',[App\Http\Controllers\ModeloController::class, 'update'])->name('update');
