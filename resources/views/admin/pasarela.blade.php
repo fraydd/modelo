@@ -117,7 +117,10 @@ input.error {
 
                 
 
-                
+                            <br>
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observacionesu" id="observacionesu" rows="3"></textarea>
+                <br>
 
                 <button id="guardar1" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro: registrar venta de uniforme?')">Guardar</button>
             </form>
@@ -181,6 +184,12 @@ input.error {
                                     </select>
                                 </div>
                             </div> 
+
+                            <br>
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observaciones" id="observaciones" rows="3"></textarea>
+                <br>
+                                     
 
                 <button id="guardar2" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
             </form>
@@ -247,7 +256,7 @@ input.error {
                         </div>
                     </div><br>
                     
-                    <div class="form-group row">
+                    <div class="form-group row inner_abona">
                     <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
 
                         <div class="col-sm-4">
@@ -259,7 +268,7 @@ input.error {
                             </select>
                         </div>
                     </div>
-                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
+                <button id="submit_abona" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
 
             
                 
@@ -273,7 +282,7 @@ input.error {
                 <fieldset style="border:solid #bcddff; border-radius:2%;  " class="form-group p-2">
                     <legend style="float:none ;" class="w-auto px-2">Saldar</legend>
                     
-                    <div class="form-group row">
+                    <div class="form-group row inner_salda">
                     <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
 
                         <div class="col-sm-4">
@@ -285,13 +294,19 @@ input.error {
                             </select>
                         </div>
                     </div>
-                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de saldar el adeudo?')" >Guardar</button>
+                <button id="submit_salda" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de saldar el adeudo?')" >Guardar</button>
 
-            
+                
+
                 
                 
                 </fieldset>
             </form>
+
+            <br>
+                <label for="observacionesad">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observacionesad" id="observacionesad" rows="2"></textarea>
+                <br>
 
 
       </div>
@@ -475,17 +490,19 @@ pasarelafcn("#tabla tbody",table)
 
 
                 var data=table.row($(this).parents("tr")).data();
-                var id=data['id']
+                var id=data['id']                    
+                console.log(data)
+
                 var url ="{{route('modelos.uniformeput',1)}}"
+                
                 url = url.replace('1', id);
                 $('#form1').attr('action',url);
                 $("#form1")[0].reset();
-
+                $('#observacionesu').val(data['observaciones']);
                 $("#pago").val("false");
                 $( "#abona" ).prop( "disabled", true );
                 $("#precio").change(function(){
                     var a= $( "#precio" ).val();
-                    console.log(a)
                     $('#abona').attr('max',a);
                     
 
@@ -500,6 +517,7 @@ pasarelafcn("#tabla tbody",table)
         }
 
         function adeudosfcn(tbody, table){
+
             $(tbody).on("click","button.adeudos", function(){
                 var data=table.row($(this).parents("tr")).data();
                 var id=data['id']
@@ -579,6 +597,10 @@ pasarelafcn("#tabla tbody",table)
                             urldel = urldel.replace('1', id);
                             $('#formdel').attr('action',urldel);
                             
+                            $('#observacionesad').val(data['observaciones']);
+
+
+
 
                             $("#formad").validate({
                                 rules: {
@@ -622,10 +644,41 @@ pasarelafcn("#tabla tbody",table)
             })
         }
 
+        $( "#submit_abona" ).click(function() {
+            if (document.getElementById('observacionesabona')===null) {
+                const newtext = document.createElement("TEXTAREA");
+                newtext.setAttribute('id', 'observacionesabona');
+                newtext.setAttribute('name', 'observacionesabona');
+                var x = document.getElementById("observacionesad").value;
+                $( newtext ).insertBefore( ".inner_abona" );
+                $('#observacionesabona').val(x)
+                $("#observacionesabona").css("display", "none")
+            }
+            
+
+           
+            
+        });
+
+        $( "#submit_salda" ).click(function() {
+            if (document.getElementById('observacionessalda')===null) {
+            
+            const newtextsalda = document.createElement("TEXTAREA");
+            newtextsalda.setAttribute('id', 'observacionessalda');
+            newtextsalda.setAttribute('name', 'observacionessalda');
+            
+            var x = document.getElementById("observacionesad").value;
+            $( newtextsalda ).insertBefore( ".inner_salda" );
+            $('#observacionessalda').val(x)
+            $("#observacionessalda").css("display", "none")
+            }
+        });
+
         function pasarelafcn(tbody, table){
             $(tbody).on("click","button.pasarela", function(){
                 var data=table.row($(this).parents("tr")).data();
                 var id=data['id']
+                console.log(data)
                 var a=0
                 $("#pasarela").change(function(){
                     idp=$('select[name=pasarela').val()
@@ -656,6 +709,7 @@ pasarelafcn("#tabla tbody",table)
                 url = url.replace('1', id);
                 $('#form2').attr('action',url);
                 $("#form2")[0].reset();
+                $('#observaciones').val(data['observaciones']);
 
                 $("#pago2").val("false");
                 $( "#abona2" ).prop( "disabled", true );

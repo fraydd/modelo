@@ -38,6 +38,7 @@ Route::get('modelos/{adeudo}/borrarad',[App\Http\Controllers\ModeloController::c
 Route::get('modelos/{adeudo}/editarad',[App\Http\Controllers\ModeloController::class, 'editarad'])->name('modelos.editarad');
 Route::put('modelos/editad/{adeudo}', [App\Http\Controllers\ModeloController::class, 'editad'])->name('modelos.editad');
 Route::put('modelos/delad/{adeudo}', [App\Http\Controllers\ModeloController::class, 'delad'])->name('modelos.delad');
+Route::put('modelos/obsvacion/{modelo}', [App\Http\Controllers\ModeloController::class, 'observaciones'])->name('modelos.obs');
 
 
 
