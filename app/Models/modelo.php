@@ -55,11 +55,7 @@ class modelo extends Model
          'meses_pagados',
          'fecha_pago',
          'fecha_vence',
-         'deuda',
-
-         'observaciones',
-
-
+         'deuda'
     ];
 
     public function ingresos(){

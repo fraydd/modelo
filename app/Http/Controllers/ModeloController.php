@@ -90,7 +90,7 @@ class ModeloController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request);
+        
        
         $request->validate([
             'nombre'=>'required',
@@ -143,11 +143,9 @@ class ModeloController extends Controller
         
         $modelo['fecha_vence']=date("Y-m-d",strtotime($request->fecha_pago."+".$request->meses_pagados."month"));
         
-        
         if (empty($request->pago)) {
             $modelo['deuda']=0;
             $modelo = new modelo($modelo);
-            
             $modelo->save();
 
             
@@ -180,8 +178,6 @@ class ModeloController extends Controller
 
             $modelo['deuda']=0;
             $modelo = new modelo($modelo);
-            
-            
             $modelo->save();
 
             $adeudo=new Adeudo();
@@ -272,11 +268,6 @@ class ModeloController extends Controller
         
         
         return view('admin.edit',compact('sexes','identifications','rhs','modelo','identificacion','sex','rh'));
-    }
-    public function observaciones(Request $request, modelo $modelo){
-        $modelo->observaciones=$request->observaciones;
-        $modelo->save();
-        return back()->withInput();
     }
     public function update(Request $request, modelo $modelo){
         $request->validate([
@@ -369,12 +360,12 @@ class ModeloController extends Controller
         $vence=$modelo->fecha_vence;
         $medios=medio::all();
        
-        return view('admin.renovar',compact('medios','modelo'))->with('nombre', $nombre)->with('id',$id)->with('vence',$vence)->with('valor',$valor);
+        return view('admin.renovar',compact('medios'))->with('nombre', $nombre)->with('id',$id)->with('vence',$vence)->with('valor',$valor);
     }
 
     public function renovarpost(Request $request , modelo $modelo){
 
-        
+
         
         
         $now =new Carbon( Carbon::now()->format('Y-m-d'));
@@ -383,9 +374,7 @@ class ModeloController extends Controller
         
         $vence=new Carbon($modelo->fecha_vence);
         $mes=intval( $request->meses_pagados);
-        $modelo->meses_pagados=$mes;
-        $modelo->observaciones=$request->observaciones;
-        
+        $modelo->meses_pagados=$mes; 
 
        
 
@@ -921,8 +910,6 @@ class ModeloController extends Controller
 
     }
     public function pasarelaput(Request $request , modelo $modelo){
-        $modelo->observaciones=$request->observaciones;
-        $modelo->save();
         
         $consepto =Tarifa::findOrFail($request->pasarela);
 
@@ -994,8 +981,7 @@ class ModeloController extends Controller
 
     }
     public function uniformeput(Request $request , modelo $modelo){
-        $modelo->observaciones=$request->observacionesu;
-        $modelo->save();
+
         /* Datos generales para pdf */
         
         
@@ -1059,12 +1045,9 @@ class ModeloController extends Controller
         
     }
     public function delad(Request $request ,Adeudo $adeudo){
-        
         if ($adeudo->delete()) {
 
             $modelo=modelo::findOrFail($adeudo->modelo_id);
-            $modelo->observaciones=$request->observacionessalda;
-            $modelo->save();
 
             /* Datos generales para pdf */
         
@@ -1102,8 +1085,6 @@ class ModeloController extends Controller
 
         
         $modelo=modelo::findOrFail($adeudo->modelo_id);
-        $modelo->observaciones=$request->observacionesabona;
-        $modelo->save();
         
          // Registrando en caja
          $cajero= new HomeController;

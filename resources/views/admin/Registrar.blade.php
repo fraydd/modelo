@@ -470,15 +470,6 @@
             </div>
         </div><br>
 
-        <div class="form-group row">
-            <label class="control-label col-sm-3 d-flex justify-content-end" for="observaciones">Observaciones</label>
-            <div class="col-sm-6">
-                <textarea class="form-control" style="width:100% ;" name="observaciones" id="observaciones" rows="3">{{old('observaciones')}}</textarea>
-    
-            </div>
-        </div><br>
-
-
 
 
             
