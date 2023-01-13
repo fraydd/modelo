@@ -71,6 +71,13 @@ input.error {
                                 </div>
                             </div><br>
                     <br>
+
+                    
+                    <label for="observaciones">Observaciones</label>
+
+                    <textarea class="form-control" style="width:100% ;" name="observaciones" id="observaciones" rows="2"></textarea>
+
+                           <br>
                     <input type="submit" id="registrar" value="Renovar" class="float-end btn btn-success" onclick="return confirm('¿Estás seguro de renovar la suscripción?')">
                          
                         

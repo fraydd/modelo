@@ -16,7 +16,8 @@ class Caja extends Model
         'concepto',
         'valor',
         'estado',
-        'medio_id'];
+        'medio_id',
+        'observaciones'];
 
         public function medios(){
             return $this->belongsTo(medio::class);

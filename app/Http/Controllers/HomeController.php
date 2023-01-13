@@ -72,13 +72,14 @@ class HomeController extends Controller
 
     }
 
-    public function cajero( $concepto,  $valor,  $paga, $medio ){
+    public function cajero( $concepto,  $valor,  $paga, $medio, $observaciones ){
         $caja['estado']=1;
         $caja['concepto']=$concepto;
         $caja['valor']=$valor;
         $caja['paga']=$paga;
         $caja['medio_id']=$medio;
         $caja['recibe']=Auth::user()->name;
+        $caja['observaciones']=$observaciones;
         
         $caja=new Caja($caja);
         $caja->save();

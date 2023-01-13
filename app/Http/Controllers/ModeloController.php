@@ -91,6 +91,7 @@ class ModeloController extends Controller
     public function store(Request $request)
     {
         
+        
        
         $request->validate([
             'nombre'=>'required',
@@ -154,7 +155,7 @@ class ModeloController extends Controller
             $registro =Tarifa::findOrFail(1);
             $valor=intval($modelo->meses_pagados)*$registro->valor;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero($registro->tipo, $valor, $modelo->nombre,intval($request->medio_id),$request->observaciones);
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -192,7 +193,7 @@ class ModeloController extends Controller
             $registro =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$registro->tipo, $valor, $modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero('Abono '.$registro->tipo, $valor, $modelo->nombre,intval($request->medio_id),$request->observaciones);
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -212,6 +213,7 @@ class ModeloController extends Controller
             
 
         }
+        $modelo->obs=$request->observaciones;
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
         return $pdf->stream("Sus_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
 
@@ -431,7 +433,7 @@ class ModeloController extends Controller
             $valor=intval($mes)*$tarifa->valor;
             
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero($tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id),$request->observaciones);
 
             $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
             $fechafac=$fechafac->format('Y-m-d');
@@ -456,7 +458,7 @@ class ModeloController extends Controller
             $tarifa =Tarifa::findOrFail(1);
             $valor=$request->abona;
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero('Abono '.$tarifa->tipo, $valor,$modelo->nombre,intval($request->medio_id),$request->observaciones);
 
             $adeudo=new Adeudo();
             $adeudo->tipo='Mensualidad';
@@ -486,7 +488,7 @@ class ModeloController extends Controller
 
 
 
-        
+        $modelo->obs=$request->observaciones;
         $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
         return $pdf->stream("Men_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$fechafac).".pdf", array("Attachment" => false));
         
@@ -911,6 +913,7 @@ class ModeloController extends Controller
     }
     public function pasarelaput(Request $request , modelo $modelo){
         
+        
         $consepto =Tarifa::findOrFail($request->pasarela);
 
         /* Datos generales para pdf */
@@ -928,7 +931,7 @@ class ModeloController extends Controller
             
             
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero($consepto->tipo.' '.$consepto->nombre, $consepto->valor,$modelo->nombre,intval($request->medio_id),$request->observaciones);
             
             /* Datos particulares para pdf */
             $modelo->tipo=Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
@@ -944,6 +947,7 @@ class ModeloController extends Controller
                 $modelo->medio="Efectivo";
                 
             }
+            $modelo->obs=$request->observaciones;
 
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Pas_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
@@ -961,7 +965,7 @@ class ModeloController extends Controller
             // Registrando en caja
             $cajero= new HomeController;
             $a=$consepto->tipo.' '.$consepto->nombre;
-            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona2,$modelo->nombre,intval($request->medio_id),$request->observaciones);
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.Tarifa::find($request->pasarela)->tipo.' '.Tarifa::find($request->pasarela)->nombre;
@@ -972,7 +976,7 @@ class ModeloController extends Controller
             $modelo->saldo=$modelo->valor-$request->abona2;
             
        
-
+            $modelo->obs=$request->observaciones;
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Pas_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
 
@@ -983,7 +987,6 @@ class ModeloController extends Controller
     public function uniformeput(Request $request , modelo $modelo){
 
         /* Datos generales para pdf */
-        
         
         $fechafac=new Carbon( Carbon::now()->format('Y-m-d'));
         $modelo->fechafac=$fechafac->format('Y-m-d');
@@ -998,7 +1001,7 @@ class ModeloController extends Controller
             /* paga todo */
             $cajero= new HomeController;
             
-            $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero($request->tipo,$request->precio,$modelo->nombre,intval($request->medio_id),$request->observacionesu);
 
             /* Datos particulares para pdf */
             $modelo->tipo=$request->tipo;
@@ -1009,6 +1012,7 @@ class ModeloController extends Controller
             $modelo->saldo=0;
 
             
+            $modelo->obs=$request->observacionesu;
 
             $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
             return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
@@ -1023,7 +1027,7 @@ class ModeloController extends Controller
             // Registrando en caja
             $cajero= new HomeController;
             $a=$request->tipo;
-            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre,intval($request->medio_id));
+            $ejecutar=$cajero->cajero('Abono inicial '.$a,$request->abona,$modelo->nombre,intval($request->medio_id),$request->observacionesu);
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.$request->tipo;
@@ -1033,8 +1037,8 @@ class ModeloController extends Controller
             // PDF
             $modelo->saldo=$modelo->valor-$request->abona;
             
-
-            $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
+            $modelo->obs=$request->observacionesu;
+            $pdf = Pdf::loadView('pdf.pago', ['modelo'=>$modelo]);
             return $pdf->stream("Uni_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
 
            
@@ -1045,6 +1049,7 @@ class ModeloController extends Controller
         
     }
     public function delad(Request $request ,Adeudo $adeudo){
+        dd($request);
         if ($adeudo->delete()) {
 
             $modelo=modelo::findOrFail($adeudo->modelo_id);

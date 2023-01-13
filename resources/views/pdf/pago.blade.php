@@ -83,22 +83,22 @@
     <div class="row fact-info mt-3">
         <table>
             <tr>
-                <td><b>Facturar a:</b></td>
+                <td><b>Facturar a:&nbsp;</b></td>
                 <td>{{$modelo->nombre}}</td>
             </tr>
             <tr>
-                <td><b>Enviar a:</b></td>
+                <td><b>Enviar a:&nbsp;</b></td>
                 <td>{{$modelo->correo}}</td>
             </tr>
             <tr>
-                <td><b>Fecha:</b></td>
+                <td><b>Fecha:&nbsp;</b></td>
                 <td>{{$modelo->fechafac}}</td>
             </tr>
             <tr>
-              <td><b>Medio de pago:</b></td>
+              <td><b>Medio de pago:&nbsp;</b></td>
               <td>{{$modelo->medio}}</td>
             </tr>
-
+            
 
             
 
@@ -135,6 +135,9 @@
       </table>
     </div>
     <p>Saldo por pagar: $ {{$modelo->saldo}}</p>
+    <br>
+    
+    <p> <small><i> <b> Observaciones: </b> {{$modelo->obs}}</i></small> </p>
   
    
 </div>

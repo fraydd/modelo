@@ -115,7 +115,10 @@ input.error {
                                 </div>
                             </div> 
 
-                
+                            <br>
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observacionesu" id="observacionesu" rows="2"></textarea>
+                <br>
 
                 
 
@@ -181,6 +184,11 @@ input.error {
                                     </select>
                                 </div>
                             </div> 
+
+                            <br>
+                <label for="observaciones">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observaciones" id="observaciones" rows="2"></textarea>
+                <br>
 
                 <button id="guardar2" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de agregar derecho a pasarela?')">Guardar</button>
             </form>
@@ -259,7 +267,7 @@ input.error {
                             </select>
                         </div>
                     </div>
-                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
+                <button id="submit_abona" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de editar adeudo?')" >Guardar</button>
 
             
                 
@@ -285,17 +293,20 @@ input.error {
                             </select>
                         </div>
                     </div>
-                <button id="submitad" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de saldar el adeudo?')" >Guardar</button>
+                <button id="submit_salda" type="submit" class="float-end btn btn-primary" onclick="return confirm('¿Seguro de saldar el adeudo?')" >Guardar</button>
 
             
                 
                 
                 </fieldset>
             </form>
-
+                <label for="observacionesad">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observacionesad" id="observacionesad" rows="2"></textarea>
+                <br>
 
       </div>
-
+      <br>
+      
     </div>
   </div>
 </div>
@@ -621,6 +632,35 @@ pasarelafcn("#tabla tbody",table)
 
             })
         }
+
+
+        $( "#submit_abona" ).click(function() {
+            if (document.getElementById('observacionesad')===null) {
+                const newtext = document.createElement("TEXTAREA");
+                newtext.setAttribute('id', 'observacionesad');
+                newtext.setAttribute('name', 'observacionesad');
+                var x = document.getElementById("observacionesad").value;
+                $( newtext ).insertBefore( ".inner_abona" );
+                $('#observacionesad').val(x)
+                $("#observacionesad").css("display", "none")
+            }
+            
+           
+            
+        });
+        $( "#submit_salda" ).click(function() {
+            if (document.getElementById('observacionesad')===null) {
+            
+            const newtextsalda = document.createElement("TEXTAREA");
+            newtextsalda.setAttribute('id', 'observacionesad');
+            newtextsalda.setAttribute('name', 'observacionesad');
+            
+            var x = document.getElementById("observacionesad").value;
+            $( newtextsalda ).insertBefore( ".inner_salda" );
+            $('#observacionesad').val(x)
+            $("#observacionesad").css("display", "none")
+            }
+        });
 
         function pasarelafcn(tbody, table){
             $(tbody).on("click","button.pasarela", function(){
