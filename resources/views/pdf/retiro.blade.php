@@ -134,6 +134,9 @@
         </tfoot>
       </table>
     </div>
+    <br>
+    
+    <p> <small><i> <b> Observaciones: </b> {{$modelo->obs}}</i></small> </p>
     
   
    

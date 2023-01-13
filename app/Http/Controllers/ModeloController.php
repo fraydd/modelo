@@ -272,6 +272,7 @@ class ModeloController extends Controller
         return view('admin.edit',compact('sexes','identifications','rhs','modelo','identificacion','sex','rh'));
     }
     public function update(Request $request, modelo $modelo){
+        
         $request->validate([
             'nombre'=>'required',
             'nid'=>'required|integer|between:0,10000000000',
@@ -524,6 +525,7 @@ class ModeloController extends Controller
     }
 
     public function cajapost(Request $request){
+        
         $modelo=new modelo();
         $modelo->nombre=$request->paga;
         $modelo->correo=$request->paga;
@@ -542,8 +544,9 @@ class ModeloController extends Controller
          $modelo->tipo=$tipo;
          $modelo->total=$valor;
          $modelo->importe=$valor;
+         $modelo->obs=$request->observaciones;
 
-         $ejecutar=$cajero->cajero($request->concepto,intval($request->valor), $request->paga, intval( $request->medio_id));
+         $ejecutar=$cajero->cajero($request->concepto,intval($request->valor), $request->paga, intval( $request->medio_id),$request->observaciones);
          $medio=medio::find($request->medio_id);
          $modelo->medio=$medio->medio;
          
@@ -561,6 +564,7 @@ class ModeloController extends Controller
     }
     public function cajapostegreso(Request $request){
         
+        $caja['observaciones']=$request->observaciones;
         $caja['estado']=0;
         $caja['concepto']=$request->concepto;
         $caja['valor']=$request->valor;
@@ -581,6 +585,7 @@ class ModeloController extends Controller
          $modelo->total=$modelo->valor;
          $modelo->importe=$modelo->valor;
          $modelo->paga=$request->paga;
+         $modelo->obs=$request->observaciones;
 
         $medio=medio::find( intval( $request->medio_id));
          $modelo->medio=$medio->medio;
@@ -1049,7 +1054,7 @@ class ModeloController extends Controller
         
     }
     public function delad(Request $request ,Adeudo $adeudo){
-        dd($request);
+        
         if ($adeudo->delete()) {
 
             $modelo=modelo::findOrFail($adeudo->modelo_id);
@@ -1062,7 +1067,7 @@ class ModeloController extends Controller
             $modelo->cantidad=1;
 
             $cajero= new HomeController;
-            $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre, intval($request->medio_id));
+            $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo, $adeudo->monto,$modelo->nombre, intval($request->medio_id), $request->observaciones_salda);
 
             /* Datos particulares para pdf */
             $modelo->tipo='Abono '.$adeudo->tipo;
@@ -1078,6 +1083,7 @@ class ModeloController extends Controller
             session()->flash('borrado');
 
         }
+        $modelo->obs=$request->observaciones_salda;
         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
         return $pdf->download("Borrar_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf");
 
@@ -1094,7 +1100,7 @@ class ModeloController extends Controller
          // Registrando en caja
          $cajero= new HomeController;
          
-         $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre,intval($request->medio_id));
+         $ejecutar=$cajero->cajero('Abono '.$adeudo->tipo,$request->editarad,$modelo->nombre,intval($request->medio_id), $request->observaciones_abona);
         
 
         /* Datos generales para pdf */
@@ -1119,7 +1125,7 @@ class ModeloController extends Controller
         
         $medio=medio::find($request->medio_id);
             $modelo->medio=$medio->medio;
-
+        $modelo->obs= $request->observaciones_abona;
         $pdf = Pdf::loadView('pdf.pago', compact('modelo'));
         return $pdf->stream("Abo_".str_replace(" ","",ucwords($adeudo->tipo))."_".str_replace(" ","",ucwords($modelo->nombre))."_".str_replace("-","",$modelo->fechafac).".pdf", array("Attachment" => false));
 

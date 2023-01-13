@@ -255,7 +255,7 @@ input.error {
                         </div>
                     </div><br>
                     
-                    <div class="form-group row">
+                    <div class="form-group row inner_abona">
                     <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
 
                         <div class="col-sm-4">
@@ -281,7 +281,7 @@ input.error {
                 <fieldset style="border:solid #bcddff; border-radius:2%;  " class="form-group p-2">
                     <legend style="float:none ;" class="w-auto px-2">Saldar</legend>
                     
-                    <div class="form-group row">
+                    <div class="form-group row inner_salda">
                     <label for="medio_id" class="col-sm-4 col-form-label">Medio de pago</label>
 
                         <div class="col-sm-4">
@@ -300,8 +300,8 @@ input.error {
                 
                 </fieldset>
             </form>
-                <label for="observacionesad">Observaciones</label>
-                <textarea class="form-control" style="width:100% ;" name="observacionesad" id="observacionesad" rows="2"></textarea>
+                <label for="observaciones_ad">Observaciones</label>
+                <textarea class="form-control" style="width:100% ;" name="observaciones_ad" id="observaciones_ad" rows="2"></textarea>
                 <br>
 
       </div>
@@ -635,33 +635,45 @@ pasarelafcn("#tabla tbody",table)
 
 
         $( "#submit_abona" ).click(function() {
-            if (document.getElementById('observacionesad')===null) {
+            ab=$("#observaciones_abona").length > 0;
+            console.log(ab)
+            if (!ab) {
+               
                 const newtext = document.createElement("TEXTAREA");
-                newtext.setAttribute('id', 'observacionesad');
-                newtext.setAttribute('name', 'observacionesad');
-                var x = document.getElementById("observacionesad").value;
+                newtext.setAttribute('id', 'observaciones_abona');
+                newtext.setAttribute('name', 'observaciones_abona');
+                var y = document.getElementById("observaciones_ad").value;
                 $( newtext ).insertBefore( ".inner_abona" );
-                $('#observacionesad').val(x)
-                $("#observacionesad").css("display", "none")
+                $('#observaciones_abona').val(y)
+                $("#observaciones_abona").css("display", "none")
+            
             }
-            
-           
-            
+            else{
+                var y = document.getElementById("observaciones_ad").value;
+                $('#observaciones_abona').val(y)
+
+            }
         });
         $( "#submit_salda" ).click(function() {
-            if (document.getElementById('observacionesad')===null) {
-            
+            sa=$("#observaciones_salda").length > 0;
+            console.log(sa)
+            if (!sa) {
+                
             const newtextsalda = document.createElement("TEXTAREA");
-            newtextsalda.setAttribute('id', 'observacionesad');
-            newtextsalda.setAttribute('name', 'observacionesad');
+            newtextsalda.setAttribute('id', 'observaciones_salda');
+            newtextsalda.setAttribute('name', 'observaciones_salda');
             
-            var x = document.getElementById("observacionesad").value;
+            var x = document.getElementById("observaciones_ad").value;
             $( newtextsalda ).insertBefore( ".inner_salda" );
-            $('#observacionesad').val(x)
-            $("#observacionesad").css("display", "none")
+            $('#observaciones_salda').val(x)
+            $("#observaciones_salda").css("display", "none")
+            }else{
+            var x = document.getElementById("observaciones_ad").value;
+            $('#observaciones_salda').val(x)
+
             }
         });
-
+    
         function pasarelafcn(tbody, table){
             $(tbody).on("click","button.pasarela", function(){
                 var data=table.row($(this).parents("tr")).data();
