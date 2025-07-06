@@ -24,17 +24,21 @@ WORKDIR /var/www
 COPY composer.json composer.lock ./
 COPY package.json package-lock.json ./
 
-# Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Instalar dependencias de PHP (incluyendo dev para compilar assets)
+RUN composer install --optimize-autoloader --no-interaction
 
 # Instalar dependencias de Node.js
-RUN npm install
+RUN npm ci
 
 # Copiar el resto de la aplicación
 COPY . .
 
 # Compilar assets
 RUN npm run production
+
+# Limpiar dependencias de desarrollo después de compilar
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && rm -rf node_modules package*.json webpack.mix.js
 
 # Configurar permisos
 RUN chown -R www-data:www-data /var/www \
