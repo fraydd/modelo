@@ -20,20 +20,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Establecer directorio de trabajo
 WORKDIR /var/www
 
-# Copiar archivos de dependencias PHP
+# Copiar archivos de dependencias
 COPY composer.json composer.lock ./
+COPY package.json package-lock.json ./
+
+# Copiar toda la aplicación primero
+COPY . .
 
 # Instalar dependencias de PHP (incluyendo dev para compilar assets)
 RUN composer install --no-interaction
 
-# Copiar archivos de Node.js
-COPY package.json package-lock.json ./
-
 # Instalar dependencias de Node.js
 RUN npm ci
-
-# Copiar el resto de la aplicación
-COPY . .
 
 # Compilar assets
 RUN npm run production
