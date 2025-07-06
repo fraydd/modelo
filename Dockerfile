@@ -1,4 +1,4 @@
-FROM php:8.0-fpm
+FROM php:8.1-fpm
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
@@ -20,12 +20,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Establecer directorio de trabajo
 WORKDIR /var/www
 
-# Copiar archivos de dependencias
+# Copiar archivos de dependencias PHP
 COPY composer.json composer.lock ./
-COPY package.json package-lock.json ./
 
 # Instalar dependencias de PHP (incluyendo dev para compilar assets)
-RUN composer install --optimize-autoloader --no-interaction
+RUN composer install --no-interaction
+
+# Copiar archivos de Node.js
+COPY package.json package-lock.json ./
 
 # Instalar dependencias de Node.js
 RUN npm ci
